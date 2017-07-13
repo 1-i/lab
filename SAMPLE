@@ -1,0 +1,1 @@
+$quicksort(ref A:array[int]; p:int; r:int) : int do if p<r then q := partition(A, p, r); quicksort(A, p, q-1); quicksort(A, q+1, r); end end
