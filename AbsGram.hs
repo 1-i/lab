@@ -21,7 +21,8 @@ data PDecl = PDec PMet Type
   deriving (Eq, Ord, Show, Read)
 
 data Stm
-    = SDecl Decl
+    = SNop
+    | SDecl Decl
     | SExp Exp
     | SBlock [Stm]
     | SWhile Ass Exp [Stm]
@@ -30,6 +31,12 @@ data Stm
     | SAss Ass
     | SCond Exp [Stm]
     | SCondEl Exp [Stm] [Stm]
+    | SWInt Exp
+    | SRInt
+    | SWDou Exp
+    | SRDou
+    | SWStr Exp
+    | SRStr
   deriving (Eq, Ord, Show, Read)
 
 data Ass = DAss Exp Exp
@@ -38,24 +45,30 @@ data Ass = DAss Exp Exp
 data Exp
     = EOr Exp Exp
     | EAnd Exp Exp
+    | EEql Exp Exp
     | ELt Exp Exp
     | EGt Exp Exp
     | EAdd Exp Exp
     | ESub Exp Exp
     | EMul Exp Exp
     | EDiv Exp Exp
-    | EDeref Exp
     | ENot Exp
+    | EDeref Exp
+    | ERefer Exp
     | EArr Exp Exp
     | ECall Ident [Exp]
     | EVar Ident
     | EStr String
     | EInt Integer
+    | EChar Char
     | EDouble Double
+    | ETrue
+    | EFalse
     | EParen Exp
   deriving (Eq, Ord, Show, Read)
 
-data Type = TInt | TDouble | TBool | TArray Type | TPtr Type
+data Type
+    = TInt | TDouble | TBool | TStr | TChar | TPtr Type | TArray Type
   deriving (Eq, Ord, Show, Read)
 
 data PMet

@@ -10,44 +10,58 @@ separator  Decl ";" ;
 separator  PDecl ";" ;
 separator  Exp "," ;
 
+SNop.	 Stm ::= ";" ;
 SDecl.   Stm ::= Decl ";"  ;
 SExp.    Stm ::= Exp ";" ;
 SBlock.  Stm ::= "do" [Stm] "end" ;
 SWhile.  Stm ::= "from" Ass "until" Exp "loop" [Stm] "end" ;
 SReturn. Stm ::= "return" Exp  ";" ;
 SFunc.	 Stm ::= Function ;
-DAss.    Ass ::= Exp8 ":=" Exp ";" ;
+DAss.    Ass ::= Exp11 ":=" Exp ";" ;
 SAss.	 Stm ::= Ass ;
 SCond.	 Stm ::= "if" Exp "then" [Stm] "end" ;
 SCondEl. Stm ::= "if" Exp "then" [Stm] "else" [Stm] "end" ;
+SWInt.	 Stm ::= "writeInt" "(" Exp ")" ";" ;
+SRInt.   Stm ::= "readInt()" ";" ;
+SWDou.	 Stm ::= "writeDouble" "(" Exp ")" ";" ;
+SRDou.	 Stm ::= "readDouble()" ";" ;
+SWStr.	 Stm ::= "writeString" "(" Exp ")" ";" ;
+SRStr.   Stm ::= "readString()" ";" ;
 
 EOr.	 Exp2 ::= Exp2 "or" Exp3 ;
 EAnd.	 Exp3 ::= Exp3 "and" Exp4 ;
-ELt.     Exp4 ::= Exp4 "<" Exp5 ;
-EGt.	 Exp4 ::= Exp4 ">" Exp5 ;
-EAdd.    Exp5 ::= Exp5 "+" Exp6 ;
-ESub.    Exp5 ::= Exp5 "-" Exp6 ;
-EMul.    Exp6 ::= Exp6 "*" Exp7 ;
-EDiv.	 Exp6 ::= Exp6 "/" Exp7 ;
-EDeref.	 Exp8 ::= "*" Exp7 ;
-ENot.	 Exp8 ::= "!" Exp7 ;
-EArr.	 Exp9 ::= Exp9 "[" Exp "]" ;
-ECall.   Exp10 ::= Ident "(" [Exp] ")" ;
+EEql.	 Exp4 ::= Exp4 "==" Exp5 ;
+ELt.     Exp5 ::= Exp5 "<" Exp6 ;
+EGt.	 Exp5 ::= Exp5 ">" Exp6 ;
+EAdd.    Exp6 ::= Exp6 "+" Exp7 ;
+ESub.    Exp6 ::= Exp6 "-" Exp7 ;
+EMul.    Exp7 ::= Exp7 "*" Exp8 ;
+EDiv.	 Exp7 ::= Exp7 "/" Exp8 ;
+ENot.	 Exp9 ::= "!" Exp8 ;
+EDeref.	 Exp11 ::= "*" Exp11 ;
+ERefer.	 Exp11 ::= "&" Exp11 ;
+EArr.	 Exp12 ::= Exp12 "[" Exp "]" ;
+ECall.   Exp13 ::= Ident "(" [Exp] ")" ;
+EVar.    Exp13 ::= Ident ;
 
-EVar.    Exp10 ::= Ident ;
-EStr.    Exp10 ::= String ;
-EInt.    Exp10 ::= Integer ;
-EDouble. Exp10 ::= Double ;
+EStr.    Exp13 ::= String ;
+EInt.    Exp13 ::= Integer ;
+EChar.	 Exp13 ::= Char ;
+EDouble. Exp13 ::= Double ;
+ETrue.	 Exp13 ::= "true" ;
+EFalse.	 Exp13 ::= "false" ;
 
-EParen.  Exp10 ::= "(" Exp ")" ;
+EParen.  Exp13 ::= "(" Exp ")" ;
 
-coercions Exp 10 ;
+coercions Exp 13 ;
 
 TInt.    Type ::= "int" ;
 TDouble. Type ::= "double" ;
 TBool.	 Type ::= "bool" ;
-TArray.	 Type ::= "array" "[" Type "]" ;
+TStr.	 Type ::= "string";
+TChar.	 Type ::= "char";
 TPtr.    Type ::= "*" Type;
+TArray.	 Type ::= "array" "[" Type "]" ;
 
 PVal.	 PMet ::= "value" Ident ;
 PValres. PMet ::= "valres" Ident ;

@@ -21,7 +21,7 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   \$ | \( | \) | \: | \; | \, | \: \= | \< | \> | \+ | \- | \* | \/ | \! | \[ | \]
+   \$ | \( | \) | \: | \; | \, | \: \= | "readInt" \( \) | "readDouble" \( \) | "readString" \( \) | \= \= | \< | \> | \+ | \- | \* | \/ | \! | \& | \[ | \]
 
 :-
 
@@ -30,7 +30,7 @@ $white+ ;
 
 $l $i*   { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
 \" ([$u # [\" \\ \n]] | (\\ (\" | \\ | \' | n | t)))* \"{ tok (\p s -> PT p (TL $ share $ unescapeInitTail s)) }
-
+\' ($u # [\' \\] | \\ [\\ \' n t]) \'  { tok (\p s -> PT p (TC $ share s))  }
 $d+      { tok (\p s -> PT p (TI $ share s))    }
 $d+ \. $d+ (e (\-)? $d+)? { tok (\p s -> PT p (TD $ share s)) }
 
@@ -96,7 +96,7 @@ eitherResIdent tv s = treeFind resWords
                               | s == a = t
 
 resWords :: BTree
-resWords = b "array" 18 (b "/" 9 (b "*" 5 (b "(" 3 (b "$" 2 (b "!" 1 N N) N) (b ")" 4 N N)) (b "," 7 (b "+" 6 N N) (b "-" 8 N N))) (b ">" 14 (b ";" 12 (b ":=" 11 (b ":" 10 N N) N) (b "<" 13 N N)) (b "]" 16 (b "[" 15 N N) (b "and" 17 N N)))) (b "loop" 27 (b "end" 23 (b "double" 21 (b "do" 20 (b "bool" 19 N N) N) (b "else" 22 N N)) (b "if" 25 (b "from" 24 N N) (b "int" 26 N N))) (b "then" 32 (b "ref" 30 (b "or" 29 (b "name" 28 N N) N) (b "return" 31 N N)) (b "valres" 34 (b "until" 33 N N) (b "value" 35 N N))))
+resWords = b "double" 24 (b ":=" 12 (b "*" 6 (b "&" 3 (b "$" 2 (b "!" 1 N N) N) (b ")" 5 (b "(" 4 N N) N)) (b "-" 9 (b "," 8 (b "+" 7 N N) N) (b ":" 11 (b "/" 10 N N) N))) (b "]" 18 (b "==" 15 (b "<" 14 (b ";" 13 N N) N) (b "[" 17 (b ">" 16 N N) N)) (b "bool" 21 (b "array" 20 (b "and" 19 N N) N) (b "do" 23 (b "char" 22 N N) N)))) (b "readString()" 36 (b "int" 30 (b "false" 27 (b "end" 26 (b "else" 25 N N) N) (b "if" 29 (b "from" 28 N N) N)) (b "or" 33 (b "name" 32 (b "loop" 31 N N) N) (b "readInt()" 35 (b "readDouble()" 34 N N) N))) (b "until" 42 (b "string" 39 (b "return" 38 (b "ref" 37 N N) N) (b "true" 41 (b "then" 40 N N) N)) (b "writeDouble" 45 (b "value" 44 (b "valres" 43 N N) N) (b "writeString" 47 (b "writeInt" 46 N N) N))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

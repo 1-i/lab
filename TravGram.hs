@@ -55,6 +55,7 @@ transPDecl x = case x of
 
 transStm :: Stm -> Int -> String
 transStm x n = case x of
+  SNop -> indent n ++ ";"
   SDecl decl -> indent n ++ transDecl decl ++ ";\n" 
   SExp exp -> indent n ++ transExp exp ++ ";\n"
   SBlock stms -> indent n ++ "do\n" ++ 
@@ -73,6 +74,18 @@ transStm x n = case x of
   SAss ass -> indent n ++ transAss ass ++ ";\n"
   SCond exp stms -> renderIf exp stms n 
   SCondEl exp stms1 stms2 -> renderIfElse exp stms1 stms2 n
+  SWInt exp ->
+	indent n ++ "writeInt(" ++ transExp exp ++ ");\n"
+  SRInt ->
+	indent n ++ "readInt();\n"
+  SWDou exp ->
+	indent n ++ "writeDouble(" ++ transExp exp ++ ");\n"
+  SRDou ->
+	indent n ++ "readDouble();\n" 
+  SWStr exp ->
+	indent n ++ "writeString(" ++ transExp exp ++ ");\n"
+  SRStr ->
+	indent n ++ "readString();\n"
 
 transAss :: Ass -> String 
 transAss x = case x of
@@ -82,22 +95,27 @@ transExp :: Exp -> String
 transExp x = case x of
   EOr exp1 exp2 -> "(" ++ transExp exp1 ++ "or" ++ transExp exp2 ++ ")"
   EAnd exp1 exp2 -> "(" ++ transExp exp1 ++ "and" ++ transExp exp2 ++ ")"
+  EEql exp1 exp2 -> "(" ++ transExp exp1 ++ "==" ++ transExp exp2 ++ ")"
   ELt exp1 exp2 -> "(" ++ transExp exp1 ++ "<" ++ transExp exp2 ++ ")"
   EGt exp1 exp2 -> "(" ++ transExp exp1 ++ ">" ++ transExp exp2 ++ ")"
   EAdd exp1 exp2 -> "(" ++ transExp exp1 ++ "+" ++ transExp exp2 ++ ")"
   ESub exp1 exp2 -> "(" ++ transExp exp1 ++ "-" ++ transExp exp2 ++ ")" 
   EMul exp1 exp2 -> "(" ++ transExp exp1 ++ "*" ++ transExp exp2 ++ ")"
   EDiv exp1 exp2 -> "(" ++ transExp exp1 ++ "/" ++ transExp exp2 ++ ")" 
-  ENot exp -> "( !" ++ transExp exp ++ ")"
+  ENot exp -> "(!" ++ transExp exp ++ ")"
   ECall ident exps -> transIdent ident ++ "("
 					++ (init $ concat $ map (++ ",") $ map transExp exps) 
 					++ ")"
   EDeref exp -> "*(" ++ transExp exp ++ ")"
+  ERefer exp -> "&(" ++ transExp exp ++ ")"
   EArr exp1 exp2 -> "(" ++ transExp exp1 ++ "[" ++ transExp exp2 ++ "]" 
   EVar ident -> transIdent ident
   EStr string -> string 
   EInt integer -> show integer 
   EDouble double -> show double 
+  EChar char -> show char
+  ETrue -> "true"
+  EFalse -> "false"
   EParen exp -> "(" ++ transExp exp ++ ")" 
 
 transType :: Type -> String
@@ -105,6 +123,8 @@ transType x = case x of
   TInt -> "int" 
   TDouble -> "double" 
   TBool -> "bool"
+  TStr -> "string"
+  TChar -> "char"
   TArray type_ -> "array[" ++ transType type_ ++ "]"
   TPtr type_ -> "*" ++ transType type_ 
 

@@ -26,6 +26,7 @@ transPDecl x = case x of
   PDec pmet type_ -> failure x
 transStm :: Stm -> Result
 transStm x = case x of
+  SNop -> failure x
   SDecl decl -> failure x
   SExp exp -> failure x
   SBlock stms -> failure x
@@ -35,6 +36,12 @@ transStm x = case x of
   SAss ass -> failure x
   SCond exp stms -> failure x
   SCondEl exp stms1 stms2 -> failure x
+  SWInt exp -> failure x
+  SRInt -> failure x
+  SWDou exp -> failure x
+  SRDou -> failure x
+  SWStr exp -> failure x
+  SRStr -> failure x
 transAss :: Ass -> Result
 transAss x = case x of
   DAss exp1 exp2 -> failure x
@@ -42,28 +49,35 @@ transExp :: Exp -> Result
 transExp x = case x of
   EOr exp1 exp2 -> failure x
   EAnd exp1 exp2 -> failure x
+  EEql exp1 exp2 -> failure x
   ELt exp1 exp2 -> failure x
   EGt exp1 exp2 -> failure x
   EAdd exp1 exp2 -> failure x
   ESub exp1 exp2 -> failure x
   EMul exp1 exp2 -> failure x
   EDiv exp1 exp2 -> failure x
-  EDeref exp -> failure x
   ENot exp -> failure x
+  EDeref exp -> failure x
+  ERefer exp -> failure x
   EArr exp1 exp2 -> failure x
   ECall ident exps -> failure x
   EVar ident -> failure x
   EStr string -> failure x
   EInt integer -> failure x
+  EChar char -> failure x
   EDouble double -> failure x
+  ETrue -> failure x
+  EFalse -> failure x
   EParen exp -> failure x
 transType :: Type -> Result
 transType x = case x of
   TInt -> failure x
   TDouble -> failure x
   TBool -> failure x
-  TArray type_ -> failure x
+  TStr -> failure x
+  TChar -> failure x
   TPtr type_ -> failure x
+  TArray type_ -> failure x
 transPMet :: PMet -> Result
 transPMet x = case x of
   PVal ident -> failure x
