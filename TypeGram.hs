@@ -44,18 +44,36 @@ lookupFun env x = do
 updateVar :: Env -> Ident -> Type -> Err Env
 updateVar env id typ = case env of
 	[] -> Ok ((insert id (VarTypeJudg typ) empty):[])
-	env:envs -> Ok ((insert id (VarTypeJudg typ) env):envs)
+	env:envs -> do
+		u <- Ok (Data.Map.lookup id env)
+		case u of
+			Nothing -> return ((insert id (VarTypeJudg typ) env):envs)
+			Just _ -> fail $ "identifier: " ++ transIdent id ++
+				" is already defined in current context\n"
 
 updateFun :: Env -> Ident -> ([Type], Type) -> Err Env
 updateFun env id sig = case env of
 	[] -> Ok ((insert id (FunTypeJudg sig) empty):[])
-	env:envs -> Ok ((insert id (FunTypeJudg sig) env):envs)
+	env:envs ->  do
+		u <- Ok (Data.Map.lookup id env)
+		case u of
+			Nothing -> Ok ((insert id (FunTypeJudg sig) env):envs)
+			Just _ -> Bad $ "identifier: " ++ transIdent id ++
+				" is already defined in current context\n"
 
 newBlock :: Env -> Env
 newBlock env = empty:env
 
 emptyEnv :: Env
 emptyEnv = [empty]
+
+isAssignable :: Exp -> Bool
+isAssignable e = case e of
+	EArr _ _ -> True
+	EVar _ -> True
+	EDeref _ -> True
+	EParen exp -> isAssignable exp
+	_ -> False
 
 inferExp :: Env -> Exp -> Err Type
 inferExp env x = case x of
@@ -73,6 +91,14 @@ inferExp env x = case x of
 			Nothing -> fail $ "undeclared identifier: "
 				++ transIdent id ++ "\n"
 
+	EArr exp sub -> do
+		checkExp env TInt sub
+		t <- inferExp env exp
+		case t of
+			TArray typ -> return typ
+			_ -> fail $ "expression: " ++ transExp exp ++
+				" is not an array\n"
+	
 	EEql exp1 exp2 ->
 		inferOrd env exp1 exp2 "=="	
 
@@ -107,6 +133,9 @@ inferExp env x = case x of
 	ERefer exp -> do
 		u <- inferExp env exp
 		Ok (TPtr u)
+
+	EParen exp -> do
+		inferExp env exp
 
 
 inferBin :: [Type] -> Env -> Exp -> Exp -> String -> Err Type
@@ -151,25 +180,73 @@ checkExp env typ exp = do
 				++ transType typ2
 
 
+checkAss :: Env -> Ass -> Err Env
+checkAss env (DAss lexp rexp) =
+	if (isAssignable lexp) then do
+		ltype <- inferExp env lexp
+		checkExp env ltype rexp
+		return env
+		else
+			Bad $ "expression: " ++ transExp lexp ++ 
+			" is not assignable\n" 	
+	
+
 checkStm :: Env -> Stm -> Err Env
 checkStm env x = case x of
+
+		SNop -> do
+			return env
+
 		SExp exp -> do
 			inferExp env exp
+			return env
+
+		SBlock stms -> do
+			checkStmLst (newBlock env) stms
 			return env
 
 		SDecl (Dec id typ) ->
 			updateVar env id typ
 
-		SAss (DAss lexp rexp) -> do
-			ltype <- inferExp env lexp 
-			checkExp env ltype rexp
-			return env
+		SAss ass -> do
+			checkAss env ass 
 
-		SWhile (DAss lexp rexp) exp stms -> do
-			ltype <- inferExp env lexp
-			checkExp env ltype rexp	
+		SWhile ass exp stms -> do
+			checkAss env ass
 			checkExp env TBool exp
 			checkStmLst env stms
+			return env
+
+		SCond exp stms -> do
+			checkExp env TBool exp
+			checkStmLst env stms
+			return env
+
+		SCondEl exp stmt stmf -> do
+			checkExp env TBool exp
+			checkStmLst env stmt
+			checkStmLst env stmf
+			return env
+
+		SWInt exp -> do
+			checkExp env TInt exp
+			return env
+
+		SRInt -> do
+			return env
+
+		SWDou exp -> do
+			checkExp env TDouble exp
+			return env
+
+		SRDou -> do
+			return env
+
+		SWStr exp -> do
+			checkExp env TStr exp
+			return env
+
+		SRStr -> do
 			return env
 
 checkStmLst :: Env -> [Stm] -> Err Env
