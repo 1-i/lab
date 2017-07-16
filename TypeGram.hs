@@ -88,7 +88,7 @@ inferExp env x = case x of
 		u <- lookupVar env id
 		case u of
 			Just m -> return m
-			Nothing -> fail $ "undeclared identifier: "
+			Nothing -> fail $ "unknown identifier: "
 				++ transIdent id ++ "\n"
 
 	EArr exp sub -> do
@@ -120,14 +120,15 @@ inferExp env x = case x of
 	EDiv exp1 exp2 ->
 		inferBin [TInt, TDouble] env exp1 exp2 "/"
 
-	ENot exp -> 
+	ENot exp -> do 
 		checkExp env TBool exp
+		return TBool
 
 	EDeref exp -> do 
 		u <- inferExp env exp
 		case u of
 			TPtr u -> Ok u
-			_ -> fail $ "expression " ++ transExp exp ++ 
+			_ -> fail $ "expression: " ++ transExp exp ++ 
 				" cannot be dereferenced because is not a pointer"
 
 	ERefer exp -> do
@@ -136,14 +137,37 @@ inferExp env x = case x of
 
 	EParen exp -> do
 		inferExp env exp
+	
+	ECall id exps -> do
+		u <- lookupFun env id
+		case u of
+			Just (typs, retv) ->
+				if (length typs == length exps) then do
+					checkFunArg env exps typs id
+					return retv
+				else fail $ "function: " ++ transIdent id ++
+					"has expected arity: " ++ show (length typs) ++
+					"but is invoked with: " ++ show (length exps) ++
+					"formal parameters\n"
+			Nothing -> fail $ "unknown identifier: " ++
+				transIdent id ++ "\n"
 
+checkFunArg :: Env -> [Exp] -> [Type] -> Ident -> Err ()
+checkFunArg env exps typs id = do
+	case typs of
+		t:ts -> do
+			checkExp env t (head exps)
+			checkFunArg env (tail exps) (tail typs) id
+			
+		[] -> Ok ()
 
 inferBin :: [Type] -> Env -> Exp -> Exp -> String -> Err Type
 inferBin types env exp1 exp2 opName = do
 	typ <- inferExp env exp1
 	if elem typ types
-		then
+		then do
 			checkExp env typ exp2
+			return typ
 		else
 			fail $ "expression " ++ transExp exp1 ++
 				"cannot be an argument of binary operator: " ++ opName
@@ -168,11 +192,11 @@ inferOrd env exp1 exp2 opName = do
 			
 				
 
-checkExp :: Env -> Type -> Exp -> Err Type 
+checkExp :: Env -> Type -> Exp -> Err () 
 checkExp env typ exp = do
 	typ2 <- inferExp env exp
 
-	if (typ2 == typ) then return typ 
+	if (typ2 == typ) then return () 
 		else
 			fail $ "cannot match expected type: " 
 				++ transType typ ++ " of expression: " 
@@ -248,6 +272,44 @@ checkStm env x = case x of
 
 		SRStr -> do
 			return env
+
+		SReturn exp -> do
+			u <- lookupVar env (Ident "return")
+			case u of
+				Just typ -> do
+					checkExp env typ exp
+					return env
+				Nothing -> fail $ "nothing to return the control to\n"
+
+		SFunc (Fun id pdecls rtyp stms) -> do
+			u <- makeFncCntxSwitch env id pdecls rtyp
+			checkStmLst u stms
+			v <- insertFunDeclInCtxt env id pdecls rtyp
+			return v
+
+typeOfPDecl :: PDecl -> Type
+typeOfPDecl (PDec p t) = t
+
+insertFunDeclInCtxt :: Env -> Ident -> [PDecl] -> Type -> Err Env
+insertFunDeclInCtxt env id pdecls rtyp = do
+	u <- updateFun env id ((Prelude.map typeOfPDecl pdecls), rtyp)
+	return u
+
+insertPDeclContext :: Env -> PDecl -> Err Env
+insertPDeclContext env (PDec p t) =
+	case p of
+		PVal id -> updateVar env id t
+		PValres id -> updateVar env id t
+		PName id -> updateVar env id t
+		PRef id -> updateVar env id t
+		PImpl id -> updateVar env id t	
+
+makeFncCntxSwitch :: Env -> Ident -> [PDecl] -> Type -> Err Env
+makeFncCntxSwitch env id pdecls rtyp = do
+	u <- foldM insertPDeclContext (newBlock env) pdecls
+	v <- updateVar u (Ident "return") rtyp
+	w <- insertFunDeclInCtxt v id pdecls rtyp
+	return w
 
 checkStmLst :: Env -> [Stm] -> Err Env
 checkStmLst env stms = case stms of

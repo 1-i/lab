@@ -16,4 +16,4 @@ module Main where
 
 		Ok tree -> case checkPrg tree of
 			Bad err -> "type error; " ++ err
-			Ok _ -> "ok"
+			Ok _ -> "input typechecks"
