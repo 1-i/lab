@@ -30,7 +30,8 @@ transStm x = case x of
   SDecl decl -> failure x
   SExp exp -> failure x
   SBlock stms -> failure x
-  SWhile ass exp stms -> failure x
+  SWhile exp stms -> failure x
+  SWhileA ass exp stms -> failure x
   SReturn exp -> failure x
   SFunc function -> failure x
   SAss ass -> failure x
@@ -78,6 +79,7 @@ transType x = case x of
   TChar -> failure x
   TPtr type_ -> failure x
   TArray type_ -> failure x
+  TMem type_ -> failure x
 transPMet :: PMet -> Result
 transPMet x = case x of
   PVal ident -> failure x

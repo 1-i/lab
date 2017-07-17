@@ -88,6 +88,7 @@ All other symbols are terminals.
   |  |  **|**  | //Decl// ``;`` 
   |  |  **|**  | //Exp// ``;`` 
   |  |  **|**  | ``do`` //[Stm]// ``end`` 
+  |  |  **|**  | ``until`` //Exp// ``loop`` //[Stm]// ``end`` 
   |  |  **|**  | ``from`` //Ass// ``until`` //Exp// ``loop`` //[Stm]// ``end`` 
   |  |  **|**  | ``return`` //Exp// ``;`` 
   |  |  **|**  | //Function// 
@@ -125,18 +126,19 @@ All other symbols are terminals.
   |  |  **|**  | //Exp13// 
   | //Exp13// | -> | //Ident// ``(`` //[Exp]// ``)`` 
   |  |  **|**  | //Ident// 
-  |  |  **|**  | ``(`` //Exp// ``)`` 
-  |  |  **|**  | ``(`` //Exp// ``)`` 
-  | //Exp10// | -> | //String// 
+  |  |  **|**  | //String// 
   |  |  **|**  | //Integer// 
   |  |  **|**  | //Char// 
   |  |  **|**  | //Double// 
   |  |  **|**  | ``true`` 
   |  |  **|**  | ``false`` 
-  |  |  **|**  | //Exp11// 
+  |  |  **|**  | //Exp14// 
+  | //Exp14// | -> | ``(`` //Exp// ``)`` 
+  |  |  **|**  | ``(`` //Exp// ``)`` 
   | //Exp// | -> | //Exp1// 
   | //Exp1// | -> | //Exp2// 
   | //Exp8// | -> | //Exp9// 
+  | //Exp10// | -> | //Exp11// 
   | //Type// | -> | ``int`` 
   |  |  **|**  | ``double`` 
   |  |  **|**  | ``bool`` 

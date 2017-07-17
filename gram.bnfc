@@ -14,7 +14,8 @@ SNop.	 Stm ::= ";" ;
 SDecl.   Stm ::= Decl ";"  ;
 SExp.    Stm ::= Exp ";" ;
 SBlock.  Stm ::= "do" [Stm] "end" ;
-SWhile.  Stm ::= "from" Ass "until" Exp "loop" [Stm] "end" ;
+SWhile.	 Stm ::= "until" Exp "loop" [Stm] "end" ;
+SWhileA. Stm ::= "from" Ass "until" Exp "loop" [Stm] "end" ;
 SReturn. Stm ::= "return" Exp  ";" ;
 SFunc.	 Stm ::= Function ;
 DAss.    Ass ::= Exp11 ":=" Exp ";" ;
@@ -51,9 +52,9 @@ EDouble. Exp13 ::= Double ;
 ETrue.	 Exp13 ::= "true" ;
 EFalse.	 Exp13 ::= "false" ;
 
-EParen.  Exp13 ::= "(" Exp ")" ;
+EParen.  Exp14 ::= "(" Exp ")" ;
 
-coercions Exp 13 ;
+coercions Exp 14 ;
 
 TInt.    Type ::= "int" ;
 TDouble. Type ::= "double" ;
@@ -62,9 +63,12 @@ TStr.	 Type ::= "string";
 TChar.	 Type ::= "char";
 TPtr.    Type ::= "*" Type;
 TArray.	 Type ::= "array" "[" Type "]" ;
+internal TMem.	Type ::= "&" Type ;
 
 PVal.	 PMet ::= "value" Ident ;
 PValres. PMet ::= "valres" Ident ;
 PName.	 PMet ::= "name" Ident ;
 PRef.    PMet ::= "ref" Ident ;
 PImpl.	 PMet ::= Ident ;
+
+comment	"--" ;

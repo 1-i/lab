@@ -45,6 +45,7 @@ data Ass = DAss Exp Exp
 data Exp
     = EOr Exp Exp
     | EAnd Exp Exp
+    | EEql Exp Exp
     | ELt Exp Exp
     | EGt Exp Exp
     | EAdd Exp Exp
@@ -67,7 +68,14 @@ data Exp
   deriving (Eq, Ord, Show, Read)
 
 data Type
-    = TInt | TDouble | TBool | TStr | TChar | TPtr Type | TArray Type
+    = TInt
+    | TDouble
+    | TBool
+    | TStr
+    | TChar
+    | TPtr Type
+    | TArray Type
+    | TMem Type
   deriving (Eq, Ord, Show, Read)
 
 data PMet

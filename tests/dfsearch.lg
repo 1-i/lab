@@ -1,0 +1,28 @@
+$dfs (v:int; G:array[array[int]]) : int
+do
+	st : array[int];
+	sp: int; sp := 0;
+	
+	visited : array[bool];
+	x: int; i: int;
+	
+	st[sp] := v; sp := sp+1;
+
+	until
+		sp == 0
+	loop
+		x := st[sp]; sp := sp-1;	
+		if (!visited[x]) then
+			visited[x] := true;
+			from
+				i := 1;
+			until
+				G[x][i] == 1
+			loop
+				if (!visited[(G[x][i])] ) then
+					st[sp] := G[x][i]; sp := sp+1;
+				end
+			end
+		end
+	end
+end

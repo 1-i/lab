@@ -1,0 +1,13 @@
+do
+a : int;
+b : double;
+c : string;
+c := ""+a+b;
+end
+
+do
+a : **int;
+b : int;
+*a := &b;
+end
+

@@ -96,8 +96,9 @@ inferExp env x = case x of
 		t <- inferExp env exp
 		case t of
 			TArray typ -> return typ
-			_ -> fail $ "expression: " ++ transExp exp ++
-				" is not an array\n"
+			_ -> fail $ "cannot apply subscript operator to" ++ 
+				"expression: \n" ++ 
+				"\t- " ++ transExp exp ++ "\n"
 	
 	EEql exp1 exp2 ->
 		inferOrd env exp1 exp2 "=="	
@@ -109,16 +110,16 @@ inferExp env x = case x of
 		inferOrd env exp1 exp2 ">"	
 
 	EAdd exp1 exp2 ->
-		inferBin [TInt, TStr, TDouble] env exp1 exp2 "+"
+		inferAdd env exp1 exp2 "+"
 
 	ESub exp1 exp2 ->
-		inferBin [TInt, TStr, TDouble] env exp1 exp2 "-"
+		inferAdd env exp1 exp2 "-"
 
 	EMul exp1 exp2 ->
-		inferBin [TInt, TDouble] env exp1 exp2 "*"
+		inferMul env exp1 exp2 "*"
 
 	EDiv exp1 exp2 ->
-		inferBin [TInt, TDouble] env exp1 exp2 "/"
+		inferMul env exp1 exp2 "/"
 
 	ENot exp -> do 
 		checkExp env TBool exp
@@ -128,12 +129,20 @@ inferExp env x = case x of
 		u <- inferExp env exp
 		case u of
 			TPtr u -> Ok u
-			_ -> fail $ "expression: " ++ transExp exp ++ 
-				" cannot be dereferenced because is not a pointer"
+			_ -> fail $ "cannot dereference expression: " ++ "\n" ++
+				"\t- " ++ transExp exp ++ " : " ++ transType u ++ "\n"
 
 	ERefer exp -> do
 		u <- inferExp env exp
-		Ok (TPtr u)
+		case u of
+			TMem u -> fail $ "cannot take the memory address " ++
+				"of expression: " ++ "\n" ++
+				"\t- " ++ transExp exp ++ " : " ++ transType u ++ "\n"
+			_ -> if isAssignable exp then 
+					Ok (TMem u) 
+				 else fail $ "cannot take the memory address " ++
+					"of expression: " ++ "\n" ++
+					"\t- " ++ transExp exp ++ " : " ++ transType u ++ "\n"
 
 	EParen exp -> do
 		inferExp env exp
@@ -145,8 +154,8 @@ inferExp env x = case x of
 				if (length typs == length exps) then do
 					checkFunArg env exps typs id
 					return retv
-				else fail $ "function: " ++ transIdent id ++
-					"has expected arity: " ++ show (length typs) ++
+				else fail $ "function: " ++ transIdent id ++ "\n" ++
+					"\t has expected arity: " ++ show (length typs) ++
 					"but is invoked with: " ++ show (length exps) ++
 					"formal parameters\n"
 			Nothing -> fail $ "unknown identifier: " ++
@@ -161,18 +170,6 @@ checkFunArg env exps typs id = do
 			
 		[] -> Ok ()
 
-inferBin :: [Type] -> Env -> Exp -> Exp -> String -> Err Type
-inferBin types env exp1 exp2 opName = do
-	typ <- inferExp env exp1
-	if elem typ types
-		then do
-			checkExp env typ exp2
-			return typ
-		else
-			fail $ "expression " ++ transExp exp1 ++
-				"cannot be an argument of binary operator: " ++ opName
-				++ "\n"
-
 inferOrd :: Env -> Exp -> Exp -> String -> Err Type
 inferOrd env exp1 exp2 opName = do
 	typ1 <- inferExp env exp1
@@ -182,15 +179,97 @@ inferOrd env exp1 exp2 opName = do
 			case typ2 of
 				TPtr _ -> return TBool
 				_ -> fail $ "comparison " ++ opName ++
-					" between incompatible expressions " ++
-					transExp exp1 ++ " and " ++ transExp exp2 ++ "\n"
+					" between incompatible expressions: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n"
+					++ "\t- " ++ transExp exp2 ++ " : " 
+						++ transType typ2 ++ "\n"
 		_ ->
 			if (typ1 == typ2) then return TBool else
 				fail  $ "comparison " ++ opName ++
-				" between incompatible expressions " ++
-				transExp exp1 ++ " and " ++ transExp exp2 ++ "\n"
-			
+					" between incompatible expressions: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n"
+					++ "\t- " ++ transExp exp2 ++ " : " 
+						++ transType typ2 ++ "\n"
+
+inferAdd :: Env -> Exp -> Exp -> String -> Err Type
+inferAdd env exp1 exp2 opName =  do
+	typ1 <- inferExp env exp1
+	typ2 <- inferExp env exp2
+	case typ1 of
+		TPtr t ->
+			case typ2 of
+				TInt -> return (TPtr t)
+				_ -> fail $ "operator: " ++ opName ++
+					" has incompatible operands: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n" ++
+					"\t- " ++ transExp exp2 ++ " : "
+						++ transType typ2 ++ "\n"
+		TInt ->
+			case typ2 of
+				TInt -> return TInt
+				TDouble -> return TDouble
+				TStr -> return TStr
+				_ -> fail $ "operator: " ++ opName ++
+					" has incompatible operands: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n" ++
+					"\t- " ++ transExp exp2 ++ " : "
+						++ transType typ2 ++ "\n"
+
+		TDouble ->
+			case typ2 of
+				TInt -> return TDouble
+				TDouble -> return TDouble
+				TStr -> return TStr
+				_ -> fail $ "operator: " ++ opName ++
+					" has incompatible operands: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n" ++
+					"\t- " ++ transExp exp2 ++ " : "
+						++ transType typ2 ++ "\n"
+
+		TStr ->
+			case typ2 of
+				TInt -> return TStr
+				TDouble -> return TStr
+				TStr -> return TStr
+				_ -> fail $ "operator: " ++ opName ++
+					" has incompatible operands: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n" ++
+					"\t- " ++ transExp exp2 ++ " : "
+						++ transType typ2 ++ "\n"
 				
+
+inferMul :: Env -> Exp -> Exp -> String -> Err Type
+inferMul env exp1 exp2 opName =  do
+	typ1 <- inferExp env exp1
+	typ2 <- inferExp env exp2
+	case typ1 of
+		TInt ->
+			case typ2 of
+				TInt -> return TInt
+				TDouble -> return TDouble
+				_ -> fail $ "operator: " ++ opName ++
+					" has incompatible operands: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n" ++
+					"\t- " ++ transExp exp2 ++ " : "
+						++ transType typ2 ++ "\n"
+
+		TDouble ->
+			case typ2 of
+				TInt -> return TDouble
+				TDouble -> return TDouble
+				_ -> fail $ "operator: " ++ opName ++
+					" has incompatible operands: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n" ++
+					"\t- " ++ transExp exp2 ++ " : "
+						++ transType typ2 ++ "\n"
 
 checkExp :: Env -> Type -> Exp -> Err () 
 checkExp env typ exp = do
@@ -198,20 +277,46 @@ checkExp env typ exp = do
 
 	if (typ2 == typ) then return () 
 		else
-			fail $ "cannot match expected type: " 
-				++ transType typ ++ " of expression: " 
-				++ transExp exp ++ " with actual type: " 
-				++ transType typ2
+			fail $ "cannot match expression: \n" 
+				++ "\t- " ++ transExp exp ++ " : " ++ transType typ ++ "\n"
+				++ "with its expected type: " ++ transType typ2
 
 
-checkAss :: Env -> Ass -> Err Env
+checkAss :: Env -> Ass -> Err ()
 checkAss env (DAss lexp rexp) =
 	if (isAssignable lexp) then do
 		ltype <- inferExp env lexp
-		checkExp env ltype rexp
-		return env
+		rtype <- inferExp env rexp
+		case ltype of
+			TPtr t -> case rtype of
+				TPtr u -> if (u == t) then return ()
+					else fail $ "cannot match expression: \n" 
+					++ "\t- " ++ transExp rexp ++ " : " ++
+					transType rtype ++ "\n"
+					++ "with its expected type: " ++ transType ltype
+					++ "\n"
+				TMem u -> if (u == t) then return ()
+					else fail $ "cannot match expression: \n" 
+					++ "\t- " ++ transExp rexp ++ " : " ++
+					transType rtype ++ "\n"
+					++ "with its expected type: " ++ transType ltype
+					++ "\n"
+				_ -> fail $ "cannot match expression: \n" 
+					++ "\t- " ++ transExp rexp ++ " : " ++ 
+					transType rtype ++ "\n"
+					++ "with its expected type: " ++ transType ltype
+					++ "\n"
+
+			_ -> if (ltype == rtype) then return () 
+					else
+						fail $ "cannot match expression: \n" 
+							++ "\t- " ++ transExp rexp ++ " : " ++ 
+							transType ltype ++ "\n"
+							++ "with its expected type: " 
+							++ transType rtype ++ "\n"
 		else
-			Bad $ "expression: " ++ transExp lexp ++ 
+			Bad $ "expression: \n" 
+			++ "\t- " ++ transExp lexp ++ "\n" ++
 			" is not assignable\n" 	
 	
 
@@ -234,9 +339,15 @@ checkStm env x = case x of
 
 		SAss ass -> do
 			checkAss env ass 
+			return env
 
-		SWhile ass exp stms -> do
+		SWhileA ass exp stms -> do
 			checkAss env ass
+			checkExp env TBool exp
+			checkStmLst env stms
+			return env
+
+		SWhile exp stms -> do
 			checkExp env TBool exp
 			checkStmLst env stms
 			return env

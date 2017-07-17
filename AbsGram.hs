@@ -25,7 +25,8 @@ data Stm
     | SDecl Decl
     | SExp Exp
     | SBlock [Stm]
-    | SWhile Ass Exp [Stm]
+    | SWhile Exp [Stm]
+    | SWhileA Ass Exp [Stm]
     | SReturn Exp
     | SFunc Function
     | SAss Ass
@@ -68,7 +69,14 @@ data Exp
   deriving (Eq, Ord, Show, Read)
 
 data Type
-    = TInt | TDouble | TBool | TStr | TChar | TPtr Type | TArray Type
+    = TInt
+    | TDouble
+    | TBool
+    | TStr
+    | TChar
+    | TPtr Type
+    | TArray Type
+    | TMem Type
   deriving (Eq, Ord, Show, Read)
 
 data PMet

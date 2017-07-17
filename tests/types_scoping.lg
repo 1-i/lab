@@ -1,0 +1,8 @@
+a: int;
+c: int;
+do
+	a: int;
+	b: int;
+end
+b: int;
+c: int;

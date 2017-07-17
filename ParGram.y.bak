@@ -29,10 +29,10 @@ import ErrM
 %name pExp11 Exp11
 %name pExp12 Exp12
 %name pExp13 Exp13
-%name pExp10 Exp10
 %name pExp Exp
 %name pExp1 Exp1
 %name pExp8 Exp8
+%name pExp10 Exp10
 %name pType Type
 %name pPMet PMet
 -- no lexer declaration
@@ -132,7 +132,8 @@ Stm : ';' { AbsGram.SNop }
     | Decl ';' { AbsGram.SDecl $1 }
     | Exp ';' { AbsGram.SExp $1 }
     | 'do' ListStm 'end' { AbsGram.SBlock (reverse $2) }
-    | 'from' Ass 'until' Exp 'loop' ListStm 'end' { AbsGram.SWhile $2 $4 (reverse $6) }
+    | 'until' Exp 'loop' ListStm 'end' { AbsGram.SWhile $2 (reverse $4) }
+    | 'from' Ass 'until' Exp 'loop' ListStm 'end' { AbsGram.SWhileA $2 $4 (reverse $6) }
     | 'return' Exp ';' { AbsGram.SReturn $2 }
     | Function { AbsGram.SFunc $1 }
     | Ass { AbsGram.SAss $1 }
@@ -175,22 +176,22 @@ Exp12 : Exp12 '[' Exp ']' { AbsGram.EArr $1 $3 } | Exp13 { $1 }
 Exp13 :: { Exp }
 Exp13 : Ident '(' ListExp ')' { AbsGram.ECall $1 $3 }
       | Ident { AbsGram.EVar $1 }
-      | '(' Exp ')' { AbsGram.EParen $2 }
-      | '(' Exp ')' { $2 }
-Exp10 :: { Exp }
-Exp10 : String { AbsGram.EStr $1 }
+      | String { AbsGram.EStr $1 }
       | Integer { AbsGram.EInt $1 }
       | Char { AbsGram.EChar $1 }
       | Double { AbsGram.EDouble $1 }
       | 'true' { AbsGram.ETrue }
       | 'false' { AbsGram.EFalse }
-      | Exp11 { $1 }
+      | '(' Exp ')' { AbsGram.EParen $2 }
+      | '(' Exp ')' { $2 }
 Exp :: { Exp }
 Exp : Exp1 { $1 }
 Exp1 :: { Exp }
 Exp1 : Exp2 { $1 }
 Exp8 :: { Exp }
 Exp8 : Exp9 { $1 }
+Exp10 :: { Exp }
+Exp10 : Exp11 { $1 }
 Type :: { Type }
 Type : 'int' { AbsGram.TInt }
      | 'double' { AbsGram.TDouble }

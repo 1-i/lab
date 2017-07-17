@@ -59,7 +59,7 @@ The symbols used in gram are the following:
   | ] |  |  | 
 
 ===Comments===
-There are no single-line comments in the grammar.There are no multiple-line comments in the grammar.
+Single-line comments begin with --.There are no multiple-line comments in the grammar.
 
 ==The syntactic structure of gram==
 Non-terminals are enclosed between < and >. 
@@ -88,6 +88,7 @@ All other symbols are terminals.
   |  |  **|**  | //Decl// ``;`` 
   |  |  **|**  | //Exp// ``;`` 
   |  |  **|**  | ``do`` //[Stm]// ``end`` 
+  |  |  **|**  | ``until`` //Exp// ``loop`` //[Stm]// ``end`` 
   |  |  **|**  | ``from`` //Ass// ``until`` //Exp// ``loop`` //[Stm]// ``end`` 
   |  |  **|**  | ``return`` //Exp// ``;`` 
   |  |  **|**  | //Function// 
@@ -131,7 +132,8 @@ All other symbols are terminals.
   |  |  **|**  | //Double// 
   |  |  **|**  | ``true`` 
   |  |  **|**  | ``false`` 
-  |  |  **|**  | ``(`` //Exp// ``)`` 
+  |  |  **|**  | //Exp14// 
+  | //Exp14// | -> | ``(`` //Exp// ``)`` 
   |  |  **|**  | ``(`` //Exp// ``)`` 
   | //Exp// | -> | //Exp1// 
   | //Exp1// | -> | //Exp2// 

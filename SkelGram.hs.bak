@@ -49,6 +49,7 @@ transExp :: Exp -> Result
 transExp x = case x of
   EOr exp1 exp2 -> failure x
   EAnd exp1 exp2 -> failure x
+  EEql exp1 exp2 -> failure x
   ELt exp1 exp2 -> failure x
   EGt exp1 exp2 -> failure x
   EAdd exp1 exp2 -> failure x
@@ -77,6 +78,7 @@ transType x = case x of
   TChar -> failure x
   TPtr type_ -> failure x
   TArray type_ -> failure x
+  TMem type_ -> failure x
 transPMet :: PMet -> Result
 transPMet x = case x of
   PVal ident -> failure x

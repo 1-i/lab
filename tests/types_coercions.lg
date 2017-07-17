@@ -1,0 +1,5 @@
+a: int; b: double; c: string; d: string;
+
+d := a + b + c;
+b := a + b + "";
+d := a + b;

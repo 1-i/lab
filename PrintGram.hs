@@ -110,7 +110,8 @@ instance Print Stm where
     SDecl decl -> prPrec i 0 (concatD [prt 0 decl, doc (showString ";")])
     SExp exp -> prPrec i 0 (concatD [prt 0 exp, doc (showString ";")])
     SBlock stms -> prPrec i 0 (concatD [doc (showString "do"), prt 0 stms, doc (showString "end")])
-    SWhile ass exp stms -> prPrec i 0 (concatD [doc (showString "from"), prt 0 ass, doc (showString "until"), prt 0 exp, doc (showString "loop"), prt 0 stms, doc (showString "end")])
+    SWhile exp stms -> prPrec i 0 (concatD [doc (showString "until"), prt 0 exp, doc (showString "loop"), prt 0 stms, doc (showString "end")])
+    SWhileA ass exp stms -> prPrec i 0 (concatD [doc (showString "from"), prt 0 ass, doc (showString "until"), prt 0 exp, doc (showString "loop"), prt 0 stms, doc (showString "end")])
     SReturn exp -> prPrec i 0 (concatD [doc (showString "return"), prt 0 exp, doc (showString ";")])
     SFunc function -> prPrec i 0 (concatD [prt 0 function])
     SAss ass -> prPrec i 0 (concatD [prt 0 ass])
@@ -151,7 +152,7 @@ instance Print Exp where
     EDouble d -> prPrec i 13 (concatD [prt 0 d])
     ETrue -> prPrec i 13 (concatD [doc (showString "true")])
     EFalse -> prPrec i 13 (concatD [doc (showString "false")])
-    EParen exp -> prPrec i 13 (concatD [doc (showString "("), prt 0 exp, doc (showString ")")])
+    EParen exp -> prPrec i 14 (concatD [doc (showString "("), prt 0 exp, doc (showString ")")])
   prtList _ [] = (concatD [])
   prtList _ [x] = (concatD [prt 0 x])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])
@@ -164,6 +165,7 @@ instance Print Type where
     TChar -> prPrec i 0 (concatD [doc (showString "char")])
     TPtr type_ -> prPrec i 0 (concatD [doc (showString "*"), prt 0 type_])
     TArray type_ -> prPrec i 0 (concatD [doc (showString "array"), doc (showString "["), prt 0 type_, doc (showString "]")])
+    TMem type_ -> prPrec i 0 (concatD [doc (showString "&"), prt 0 type_])
 
 instance Print PMet where
   prt i e = case e of

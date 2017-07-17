@@ -29,6 +29,7 @@ import ErrM
 %name pExp11 Exp11
 %name pExp12 Exp12
 %name pExp13 Exp13
+%name pExp14 Exp14
 %name pExp Exp
 %name pExp1 Exp1
 %name pExp8 Exp8
@@ -132,7 +133,8 @@ Stm : ';' { AbsGram.SNop }
     | Decl ';' { AbsGram.SDecl $1 }
     | Exp ';' { AbsGram.SExp $1 }
     | 'do' ListStm 'end' { AbsGram.SBlock (reverse $2) }
-    | 'from' Ass 'until' Exp 'loop' ListStm 'end' { AbsGram.SWhile $2 $4 (reverse $6) }
+    | 'until' Exp 'loop' ListStm 'end' { AbsGram.SWhile $2 (reverse $4) }
+    | 'from' Ass 'until' Exp 'loop' ListStm 'end' { AbsGram.SWhileA $2 $4 (reverse $6) }
     | 'return' Exp ';' { AbsGram.SReturn $2 }
     | Function { AbsGram.SFunc $1 }
     | Ass { AbsGram.SAss $1 }
@@ -181,8 +183,9 @@ Exp13 : Ident '(' ListExp ')' { AbsGram.ECall $1 $3 }
       | Double { AbsGram.EDouble $1 }
       | 'true' { AbsGram.ETrue }
       | 'false' { AbsGram.EFalse }
-      | '(' Exp ')' { AbsGram.EParen $2 }
-      | '(' Exp ')' { $2 }
+      | Exp14 { $1 }
+Exp14 :: { Exp }
+Exp14 : '(' Exp ')' { AbsGram.EParen $2 } | '(' Exp ')' { $2 }
 Exp :: { Exp }
 Exp : Exp1 { $1 }
 Exp1 :: { Exp }

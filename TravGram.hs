@@ -55,13 +55,19 @@ transPDecl x = case x of
 
 transStm :: Stm -> Int -> String
 transStm x n = case x of
-  SNop -> indent n ++ ";"
+  SNop -> indent n ++ ";\n"
   SDecl decl -> indent n ++ transDecl decl ++ ";\n" 
   SExp exp -> indent n ++ transExp exp ++ ";\n"
   SBlock stms -> indent n ++ "do\n" ++ 
 		(concat $ map (\u -> transStm u (n+1)) stms) 
 		++ indent n ++ "end\n"
-  SWhile ass exp stms ->
+  SWhile exp stms ->
+	indent n ++ "until\n" ++
+		indent (n+1) ++ transExp exp ++ "\n" ++
+	indent n ++ "loop\n" ++
+		(concat $ map (\u -> transStm u (n+1)) stms) ++ "\n" ++ 
+	indent n ++ "end\n"
+  SWhileA ass exp stms ->
 	indent n ++ "from\n" ++
 		indent (n+1) ++	transAss ass ++ "\n" ++
 	indent n ++ "until\n" ++
@@ -110,7 +116,7 @@ transExp x = case x of
   ERefer exp -> "&(" ++ transExp exp ++ ")"
   EArr exp1 exp2 -> "(" ++ transExp exp1 ++ "[" ++ transExp exp2 ++ "]" 
   EVar ident -> transIdent ident
-  EStr string -> string 
+  EStr string -> show string 
   EInt integer -> show integer 
   EDouble double -> show double 
   EChar char -> show char
@@ -127,6 +133,7 @@ transType x = case x of
   TChar -> "char"
   TArray type_ -> "array[" ++ transType type_ ++ "]"
   TPtr type_ -> "*" ++ transType type_ 
+  TMem type_ -> "&" ++ transType type_
 
 transPMet :: PMet -> String
 transPMet x = case x of
