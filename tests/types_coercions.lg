@@ -1,5 +1,5 @@
 a: int; b: double; c: string; d: string;
 
-d := a + b + c;
-b := a + b + "";
-d := a + b;
+d := a + b + c;		-- int + double + string : string
+b := a + b + "";	-- same as above, with string literal
+d := a + b;			-- type error

@@ -65,7 +65,6 @@ data Exp
     | EDouble Double
     | ETrue
     | EFalse
-    | EParen Exp
   deriving (Eq, Ord, Show, Read)
 
 data Type

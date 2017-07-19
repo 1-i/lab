@@ -51,15 +51,14 @@ The reserved words used in gram are the following:
   | ``writeInt`` | ``writeString`` |  | 
 
 The symbols used in gram are the following:
-  | $ | ( | ) | :
-  | ; | , | := | readInt()
-  | readDouble() | readString() | == | <
-  | > | + | - | *
-  | / | ! | & | [
-  | ] |  |  | 
+  | ( | ) | : | ;
+  | , | := | readInt() | readDouble()
+  | readString() | == | < | >
+  | + | - | * | /
+  | ! | & | [ | ]
 
 ===Comments===
-There are no single-line comments in the grammar.There are no multiple-line comments in the grammar.
+Single-line comments begin with --.There are no multiple-line comments in the grammar.
 
 ==The syntactic structure of gram==
 Non-terminals are enclosed between < and >. 
@@ -68,7 +67,7 @@ and **eps** (empty rule) belong to the BNF notation.
 All other symbols are terminals.
 
   | //Program// | -> | //[Stm]// 
-  | //Function// | -> | ``$`` //Ident// ``(`` //[PDecl]// ``)`` ``:`` //Type// ``do`` //[Stm]// ``end`` 
+  | //Function// | -> | //Ident// ``(`` //[PDecl]// ``)`` ``:`` //Type// ``do`` //[Stm]// ``end`` 
   | //Decl// | -> | //Ident// ``:`` //Type// 
   | //PDecl// | -> | //PMet// ``:`` //Type// 
   | //[Function]// | -> | **eps**
@@ -101,7 +100,7 @@ All other symbols are terminals.
   |  |  **|**  | ``readDouble()`` ``;`` 
   |  |  **|**  | ``writeString`` ``(`` //Exp// ``)`` ``;`` 
   |  |  **|**  | ``readString()`` ``;`` 
-  | //Ass// | -> | //Exp11// ``:=`` //Exp// ``;`` 
+  | //Ass// | -> | //Exp12// ``:=`` //Exp// ``;`` 
   | //Exp2// | -> | //Exp2// ``or`` //Exp3// 
   |  |  **|**  | //Exp3// 
   | //Exp3// | -> | //Exp3// ``and`` //Exp4// 
@@ -133,12 +132,11 @@ All other symbols are terminals.
   |  |  **|**  | ``true`` 
   |  |  **|**  | ``false`` 
   |  |  **|**  | //Exp14// 
-  | //Exp14// | -> | ``(`` //Exp// ``)`` 
-  |  |  **|**  | ``(`` //Exp// ``)`` 
   | //Exp// | -> | //Exp1// 
   | //Exp1// | -> | //Exp2// 
   | //Exp8// | -> | //Exp9// 
   | //Exp10// | -> | //Exp11// 
+  | //Exp14// | -> | ``(`` //Exp// ``)`` 
   | //Type// | -> | ``int`` 
   |  |  **|**  | ``double`` 
   |  |  **|**  | ``bool`` 

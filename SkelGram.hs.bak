@@ -30,7 +30,8 @@ transStm x = case x of
   SDecl decl -> failure x
   SExp exp -> failure x
   SBlock stms -> failure x
-  SWhile ass exp stms -> failure x
+  SWhile exp stms -> failure x
+  SWhileA ass exp stms -> failure x
   SReturn exp -> failure x
   SFunc function -> failure x
   SAss ass -> failure x
@@ -68,7 +69,8 @@ transExp x = case x of
   EDouble double -> failure x
   ETrue -> failure x
   EFalse -> failure x
-  EParen exp -> failure x
+transExpr :: Expr -> Result
+transExpr x = case x of
 transType :: Type -> Result
 transType x = case x of
   TInt -> failure x

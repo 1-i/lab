@@ -1,8 +1,12 @@
 a: int;
 c: int;
 do
-	a: int;
+	a: double;			-- a is declared within a block, its redefinition
+	writeDouble(a);		-- is valid and overrides the external one
 	b: int;
+		do
+			writeDouble(a);		-- nested blocks inherit the context
+		end
 end
-b: int;
-c: int;
+b: int;		-- we are out of the inline block, b is not defined anymore 
+c: int;		-- redefinition of c causes an error 

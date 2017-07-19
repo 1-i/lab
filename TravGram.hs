@@ -40,18 +40,18 @@ transFunction x n = case x of
   Fun ident pdecls type_ stms ->
 	indent n ++ "$" ++ transIdent ident ++ "("
 	++ (init $ concat $ (map (++ ";") $ map transPDecl pdecls)) 
-					++ ") :" ++ transType type_ ++ "\n" ++
-	indent (n+1) ++ "do\n" ++
-	(concat $ map (\u -> transStm u (n+2)) stms)  ++
-	indent (n+1) ++ "end\n"
+					++ ") : " ++ transType type_ ++ "\n" ++
+	indent n ++ "do\n" ++
+	(concat $ map (\u -> transStm u (n+1)) stms)  ++
+	indent n ++ "end\n"
 
 transDecl :: Decl -> String
 transDecl x = case x of
-  Dec ident type_ -> transIdent ident ++ ":" ++ transType type_
+  Dec ident type_ -> transIdent ident ++ " : " ++ transType type_
 
 transPDecl :: PDecl -> String
 transPDecl x = case x of
-  PDec pmet type_ -> transPMet pmet ++ ":" ++ transType type_
+  PDec pmet type_ -> transPMet pmet ++ " : " ++ transType type_
 
 transStm :: Stm -> Int -> String
 transStm x n = case x of
@@ -69,7 +69,7 @@ transStm x n = case x of
 	indent n ++ "end\n"
   SWhileA ass exp stms ->
 	indent n ++ "from\n" ++
-		indent (n+1) ++	transAss ass ++ "\n" ++
+		indent (n+1) ++	transAss ass ++ ";\n" ++
 	indent n ++ "until\n" ++
 		indent (n+1) ++ transExp exp ++ "\n" ++
 	indent n ++ "loop\n" ++
@@ -95,12 +95,12 @@ transStm x n = case x of
 
 transAss :: Ass -> String 
 transAss x = case x of
-	DAss exp1 exp2 -> transExp exp1 ++ ":=" ++ transExp exp2
+	DAss exp1 exp2 -> transExp exp1 ++ " := " ++ transExp exp2
 
 transExp :: Exp -> String
 transExp x = case x of
-  EOr exp1 exp2 -> "(" ++ transExp exp1 ++ "or" ++ transExp exp2 ++ ")"
-  EAnd exp1 exp2 -> "(" ++ transExp exp1 ++ "and" ++ transExp exp2 ++ ")"
+  EOr exp1 exp2 -> "(" ++ transExp exp1 ++ " or " ++ transExp exp2 ++ ")"
+  EAnd exp1 exp2 -> "(" ++ transExp exp1 ++ " and " ++ transExp exp2 ++ ")"
   EEql exp1 exp2 -> "(" ++ transExp exp1 ++ "==" ++ transExp exp2 ++ ")"
   ELt exp1 exp2 -> "(" ++ transExp exp1 ++ "<" ++ transExp exp2 ++ ")"
   EGt exp1 exp2 -> "(" ++ transExp exp1 ++ ">" ++ transExp exp2 ++ ")"
@@ -110,11 +110,12 @@ transExp x = case x of
   EDiv exp1 exp2 -> "(" ++ transExp exp1 ++ "/" ++ transExp exp2 ++ ")" 
   ENot exp -> "(!" ++ transExp exp ++ ")"
   ECall ident exps -> transIdent ident ++ "("
-					++ (init $ concat $ map (++ ",") $ map transExp exps) 
-					++ ")"
+					++ (init $ concat $ map (++ ",") 
+					$ map transExp exps) ++ ")"
   EDeref exp -> "*(" ++ transExp exp ++ ")"
   ERefer exp -> "&(" ++ transExp exp ++ ")"
   EArr exp1 exp2 -> "(" ++ transExp exp1 ++ "[" ++ transExp exp2 ++ "]" 
+				++ ")"
   EVar ident -> transIdent ident
   EStr string -> show string 
   EInt integer -> show integer 
@@ -122,7 +123,6 @@ transExp x = case x of
   EChar char -> show char
   ETrue -> "true"
   EFalse -> "false"
-  EParen exp -> "(" ++ transExp exp ++ ")" 
 
 transType :: Type -> String
 transType x = case x of
@@ -137,9 +137,9 @@ transType x = case x of
 
 transPMet :: PMet -> String
 transPMet x = case x of
-  PVal ident -> "value" ++ transIdent ident 
-  PValres ident -> "valres" ++ transIdent ident 
-  PName ident -> "name" ++ transIdent ident 
-  PRef ident -> "ref" ++ transIdent ident 
+  PVal ident -> "value " ++ transIdent ident 
+  PValres ident -> "valres " ++ transIdent ident 
+  PName ident -> "name " ++ transIdent ident 
+  PRef ident -> "ref " ++ transIdent ident 
   PImpl ident -> transIdent ident 
 

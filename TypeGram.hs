@@ -72,7 +72,6 @@ isAssignable e = case e of
 	EArr _ _ -> True
 	EVar _ -> True
 	EDeref _ -> True
-	EParen exp -> isAssignable exp
 	_ -> False
 
 inferExp :: Env -> Exp -> Err Type
@@ -144,9 +143,6 @@ inferExp env x = case x of
 					"of expression: " ++ "\n" ++
 					"\t- " ++ transExp exp ++ " : " ++ transType u ++ "\n"
 
-	EParen exp -> do
-		inferExp env exp
-	
 	ECall id exps -> do
 		u <- lookupFun env id
 		case u of

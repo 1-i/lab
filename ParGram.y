@@ -29,11 +29,11 @@ import ErrM
 %name pExp11 Exp11
 %name pExp12 Exp12
 %name pExp13 Exp13
-%name pExp14 Exp14
 %name pExp Exp
 %name pExp1 Exp1
 %name pExp8 Exp8
 %name pExp10 Exp10
+%name pExp14 Exp14
 %name pType Type
 %name pPMet PMet
 -- no lexer declaration
@@ -147,7 +147,7 @@ Stm : ';' { AbsGram.SNop }
     | 'writeString' '(' Exp ')' ';' { AbsGram.SWStr $3 }
     | 'readString()' ';' { AbsGram.SRStr }
 Ass :: { Ass }
-Ass : Exp11 ':=' Exp ';' { AbsGram.DAss $1 $3 }
+Ass : Exp12 ':=' Exp ';' { AbsGram.DAss $1 $3 }
 Exp2 :: { Exp }
 Exp2 : Exp2 'or' Exp3 { AbsGram.EOr $1 $3 } | Exp3 { $1 }
 Exp3 :: { Exp }
@@ -184,8 +184,6 @@ Exp13 : Ident '(' ListExp ')' { AbsGram.ECall $1 $3 }
       | 'true' { AbsGram.ETrue }
       | 'false' { AbsGram.EFalse }
       | Exp14 { $1 }
-Exp14 :: { Exp }
-Exp14 : '(' Exp ')' { AbsGram.EParen $2 } | '(' Exp ')' { $2 }
 Exp :: { Exp }
 Exp : Exp1 { $1 }
 Exp1 :: { Exp }
@@ -194,6 +192,8 @@ Exp8 :: { Exp }
 Exp8 : Exp9 { $1 }
 Exp10 :: { Exp }
 Exp10 : Exp11 { $1 }
+Exp14 :: { Exp }
+Exp14 : '(' Exp ')' { $2 }
 Type :: { Type }
 Type : 'int' { AbsGram.TInt }
      | 'double' { AbsGram.TDouble }

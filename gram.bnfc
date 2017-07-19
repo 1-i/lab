@@ -18,7 +18,7 @@ SWhile.	 Stm ::= "until" Exp "loop" [Stm] "end" ;
 SWhileA. Stm ::= "from" Ass "until" Exp "loop" [Stm] "end" ;
 SReturn. Stm ::= "return" Exp  ";" ;
 SFunc.	 Stm ::= Function ;
-DAss.    Ass ::= Exp11 ":=" Exp ";" ;
+DAss.    Ass ::= Exp12 ":=" Exp ";" ;
 SAss.	 Stm ::= Ass ;
 SCond.	 Stm ::= "if" Exp "then" [Stm] "end" ;
 SCondEl. Stm ::= "if" Exp "then" [Stm] "else" [Stm] "end" ;
@@ -52,9 +52,21 @@ EDouble. Exp13 ::= Double ;
 ETrue.	 Exp13 ::= "true" ;
 EFalse.	 Exp13 ::= "false" ;
 
-EParen.  Exp14 ::= "(" Exp ")" ;
-
-coercions Exp 14 ;
+_.  Exp ::= Exp1 ;
+_.  Exp1 ::= Exp2 ;
+_.  Exp2 ::= Exp3 ;
+_.  Exp3 ::= Exp4 ;
+_.  Exp4 ::= Exp5 ;
+_.  Exp5 ::= Exp6 ;
+_.  Exp6 ::= Exp7 ;
+_.  Exp7 ::= Exp8 ;
+_.  Exp8 ::= Exp9 ;
+_.  Exp9 ::= Exp10 ;
+_.  Exp10 ::= Exp11 ;
+_.  Exp11 ::= Exp12 ;
+_.  Exp12 ::= Exp13 ;
+_.  Exp13 ::= Exp14 ;
+_.  Exp14 ::= "(" Exp ")";
 
 TInt.    Type ::= "int" ;
 TDouble. Type ::= "double" ;

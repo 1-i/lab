@@ -127,7 +127,7 @@ instance Print Stm where
   prtList _ (x:xs) = (concatD [prt 0 x, prt 0 xs])
 instance Print Ass where
   prt i e = case e of
-    DAss exp1 exp2 -> prPrec i 0 (concatD [prt 11 exp1, doc (showString ":="), prt 0 exp2, doc (showString ";")])
+    DAss exp1 exp2 -> prPrec i 0 (concatD [prt 12 exp1, doc (showString ":="), prt 0 exp2, doc (showString ";")])
 
 instance Print Exp where
   prt i e = case e of
@@ -152,7 +152,6 @@ instance Print Exp where
     EDouble d -> prPrec i 13 (concatD [prt 0 d])
     ETrue -> prPrec i 13 (concatD [doc (showString "true")])
     EFalse -> prPrec i 13 (concatD [doc (showString "false")])
-    EParen exp -> prPrec i 14 (concatD [doc (showString "("), prt 0 exp, doc (showString ")")])
   prtList _ [] = (concatD [])
   prtList _ [x] = (concatD [prt 0 x])
   prtList _ (x:xs) = (concatD [prt 0 x, doc (showString ","), prt 0 xs])

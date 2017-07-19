@@ -1,4 +1,4 @@
 a: *int; b: **int; c: int;
-a := a + c;
-a := &c;
-a := b;
+a := a + c;		-- pointer + int : pointer
+a := &c;		-- ptr to Type may be assigned to mem address of Type
+a := b;			-- unlike C, non-matching pointer types are incompatible

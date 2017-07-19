@@ -21,9 +21,10 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- symbols and non-identifier-like reserved words
-   \$ | \( | \) | \: | \; | \, | \: \= | "readInt" \( \) | "readDouble" \( \) | "readString" \( \) | \= \= | \< | \> | \+ | \- | \* | \/ | \! | \& | \[ | \]
+   \( | \) | \: | \; | \, | \: \= | "readInt" \( \) | "readDouble" \( \) | "readString" \( \) | \= \= | \< | \> | \+ | \- | \* | \/ | \! | \& | \[ | \]
 
 :-
+"--" [.]* ; -- Toss single line comments
 
 $white+ ;
 @rsyms { tok (\p s -> PT p (eitherResIdent (TV . share) s)) }
@@ -96,7 +97,7 @@ eitherResIdent tv s = treeFind resWords
                               | s == a = t
 
 resWords :: BTree
-resWords = b "double" 24 (b ":=" 12 (b "*" 6 (b "&" 3 (b "$" 2 (b "!" 1 N N) N) (b ")" 5 (b "(" 4 N N) N)) (b "-" 9 (b "," 8 (b "+" 7 N N) N) (b ":" 11 (b "/" 10 N N) N))) (b "]" 18 (b "==" 15 (b "<" 14 (b ";" 13 N N) N) (b "[" 17 (b ">" 16 N N) N)) (b "bool" 21 (b "array" 20 (b "and" 19 N N) N) (b "do" 23 (b "char" 22 N N) N)))) (b "readString()" 36 (b "int" 30 (b "false" 27 (b "end" 26 (b "else" 25 N N) N) (b "if" 29 (b "from" 28 N N) N)) (b "or" 33 (b "name" 32 (b "loop" 31 N N) N) (b "readInt()" 35 (b "readDouble()" 34 N N) N))) (b "until" 42 (b "string" 39 (b "return" 38 (b "ref" 37 N N) N) (b "true" 41 (b "then" 40 N N) N)) (b "writeDouble" 45 (b "value" 44 (b "valres" 43 N N) N) (b "writeString" 47 (b "writeInt" 46 N N) N))))
+resWords = b "else" 24 (b ";" 12 (b "+" 6 (b "(" 3 (b "&" 2 (b "!" 1 N N) N) (b "*" 5 (b ")" 4 N N) N)) (b "/" 9 (b "-" 8 (b "," 7 N N) N) (b ":=" 11 (b ":" 10 N N) N))) (b "and" 18 (b ">" 15 (b "==" 14 (b "<" 13 N N) N) (b "]" 17 (b "[" 16 N N) N)) (b "char" 21 (b "bool" 20 (b "array" 19 N N) N) (b "double" 23 (b "do" 22 N N) N)))) (b "ref" 36 (b "loop" 30 (b "from" 27 (b "false" 26 (b "end" 25 N N) N) (b "int" 29 (b "if" 28 N N) N)) (b "readDouble()" 33 (b "or" 32 (b "name" 31 N N) N) (b "readString()" 35 (b "readInt()" 34 N N) N))) (b "valres" 42 (b "then" 39 (b "string" 38 (b "return" 37 N N) N) (b "until" 41 (b "true" 40 N N) N)) (b "writeInt" 45 (b "writeDouble" 44 (b "value" 43 N N) N) (b "writeString" 46 N N))))
    where b s n = let bs = id s
                   in B bs (TS bs n)
 

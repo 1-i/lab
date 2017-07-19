@@ -25,7 +25,8 @@ data Stm
     | SDecl Decl
     | SExp Exp
     | SBlock [Stm]
-    | SWhile Ass Exp [Stm]
+    | SWhile Exp [Stm]
+    | SWhileA Ass Exp [Stm]
     | SReturn Exp
     | SFunc Function
     | SAss Ass
@@ -64,7 +65,9 @@ data Exp
     | EDouble Double
     | ETrue
     | EFalse
-    | EParen Exp
+  deriving (Eq, Ord, Show, Read)
+
+data Expr
   deriving (Eq, Ord, Show, Read)
 
 data Type
