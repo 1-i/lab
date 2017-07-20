@@ -1,0 +1,36 @@
+\begin{section}{Implementazione}
+
+	Il lexer ed il parser sono stati generati automaticamente a partire
+	dalla grammatica con BNFC.
+
+	Il tool di pretty printing compie una visita dell'albero della
+	sintassi astratta, memorizzando un campo addizionale di chiave
+	intera per rappresentare il numero di livelli di indentazione.
+
+	La realizzazione del type checker pone qualche questione di
+	natura implementativa la cui soluzione non \`e banale. In primo luogo,
+	dal momento che come da specifica il linguaggio supporta dichiarazioni
+	di funzioni e variabili ad ogni livello di annidamento, \`e necessario
+	affrontare il problema della visibilit\`a delle dichiarazioni
+	al variare del blocco attivo. Le regole di tipo che abbiamo definito
+	suggeriscono di rappresentare i dati come una pila di contesti,
+	devono quindi essere definite opportune funzioni per gestire i
+	cambi di contesto. 
+	Le associazioni identificatore/tipo all'interno
+	del singolo contesto sono gestite da una tabella di hash. In
+	secondo luogo, non \`e immediato uniformare l'eterogeneit\`a tra gli
+	identificatori di variabili e di funzioni, se per i primi \`e
+	sufficiente memorizzare un tipo, per i secondi \`e necessaria l'intera
+	segnatura. La soluzione che abbiamo implementato consiste nella
+	definizione di un tipo di dato ad-hoc, che possa rappresentare sia
+	un singolo tipo, sia la segnatura di una funzione. I controlli di
+	consistenza sono delegati a funzioni ausiliarie.
+	Il cuore del type checker \`e costituito da due funzioni, che nel
+	codice hanno nome \texttt{inferExp} e \texttt{checkStm}. Come i
+	nomi stessi lasciano intuire, la prima determina il tipo di
+	un'espressione, mentre la seconda determina se lo statement che
+	riceve per argomento sia valido o meno. Il resto del codice \`e
+	composto da funzioni che svolgono bookkeeping di varia natura, come
+	tenere aggiornato lo stato o gestire gli errori.
+
+\end{section}

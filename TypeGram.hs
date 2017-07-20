@@ -82,6 +82,9 @@ inferExp env x = case x of
 	EChar _ -> return TChar
 	ETrue -> return TBool
 	EFalse -> return TBool
+	ERInt -> return TInt
+	ERDou -> return TDouble
+	ERStr -> return TStr
 
 	EVar id -> do
 		u <- lookupVar env id
@@ -174,6 +177,17 @@ inferOrd env exp1 exp2 opName = do
 		TPtr _ ->
 			case typ2 of
 				TPtr _ -> return TBool
+				TMem _ -> return TBool
+				_ -> fail $ "comparison " ++ opName ++
+					" between incompatible expressions: \n" ++
+					"\t- " ++ transExp exp1 ++ " : "
+						++ transType typ1 ++ "\n"
+					++ "\t- " ++ transExp exp2 ++ " : " 
+						++ transType typ2 ++ "\n"
+		TMem _ ->
+			case typ2 of
+				TPtr _ -> return TBool
+				TMem _ -> return TBool
 				_ -> fail $ "comparison " ++ opName ++
 					" between incompatible expressions: \n" ++
 					"\t- " ++ transExp exp1 ++ " : "
@@ -363,21 +377,12 @@ checkStm env x = case x of
 			checkExp env TInt exp
 			return env
 
-		SRInt -> do
-			return env
-
 		SWDou exp -> do
 			checkExp env TDouble exp
 			return env
 
-		SRDou -> do
-			return env
-
 		SWStr exp -> do
 			checkExp env TStr exp
-			return env
-
-		SRStr -> do
 			return env
 
 		SReturn exp -> do

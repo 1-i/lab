@@ -33,11 +33,8 @@ data Stm
     | SCond Exp [Stm]
     | SCondEl Exp [Stm] [Stm]
     | SWInt Exp
-    | SRInt
     | SWDou Exp
-    | SRDou
     | SWStr Exp
-    | SRStr
   deriving (Eq, Ord, Show, Read)
 
 data Ass = DAss Exp Exp
@@ -56,6 +53,9 @@ data Exp
     | ENot Exp
     | EDeref Exp
     | ERefer Exp
+    | ERInt
+    | ERDou
+    | ERStr
     | EArr Exp Exp
     | ECall Ident [Exp]
     | EVar Ident

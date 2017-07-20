@@ -1,0 +1,262 @@
+\begin{section}{Tipi}
+	Per prima cosa definiamo l'insieme di tipi usato da \textit{ME}.
+	Sia:
+	\[
+		T_0 = \{ \texttt{int}, \texttt{double}, \texttt{string},
+			\texttt{char}, \texttt{bool} \}
+	\]
+	Inoltre sia $T_1$ l'insieme minimale per inclusione tale che
+	$T_0 \subseteq T_1$ e che $\forall \tau \in T_1 . 
+	((*\tau \in T_1) \wedge (\array[\tau] \in T_1)) $. Definiamo quindi
+	$T_2 = \{ \&\tau \mid \tau \in T_1 \}$. Sia infine 
+	$T = T_1 \cup T_2$. L'insieme dei tipi di \textit{ME} \`e $T$.
+
+	Definiamo inoltre l'insieme delle segnature di funzione 
+		$F = \{(\tau, P) \mid t \in T, P \in T^*\}$.
+
+	Sia $\Gamma_0$ un contesto. Definiamo
+	un \textit{ambiente} $\Delta$ come una pila di contesti; formalmente,
+
+	\begin{itemize}
+		\item $\varnothing$ \`e un ambiente.
+		\item Se $\Delta$ \`e un ambiente e $\Gamma_0$ \`e un contesto,
+			allora $\Delta.\Gamma_0$ \`e un ambiente.
+	\end{itemize}	
+
+	Sia $\Delta = \Gamma_n.\Gamma_{n-1} \dots \Gamma_1.\Gamma_0$ un
+	ambiente, $x$ una variabile, $k$ il minimo intero per
+	cui $x$ \`e in $\Gamma_k$,  allora:
+
+	\begin{prooftree}	
+		\AxiomC{}
+		\RightLabel{se $x:\tau$ in $\Gamma_k$}
+		\UnaryInfC{$\Delta \vdash x : \tau$}
+	\end{prooftree}
+
+	Introduciamo ora le regole per i tipi delle espressioni. Nelle
+	seguenti, $\Gamma$ rappresenta un contesto.
+
+	\begin{reg}{Tipi Elementari}
+		\begin{prooftree}
+			\AxiomC{}
+			\RightLabel{se $x$ \`e un intero letterale}
+			\UnaryInfC{$\Gamma \vdash x : \texttt{int}$}
+		\end{prooftree}
+	\end{reg}
+
+	Regole analoghe per gli altri tipi elementari.
+
+	\begin{reg}{Operatori booleani}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \texttt{bool}$}
+			\AxiomC{$\Gamma \vdash y : \texttt{bool}$}
+			\BinaryInfC{$\Gamma \vdash x \texttt{ or } y : \texttt{bool}$}
+		\end{prooftree}
+	\end{reg}
+
+	Regole analoghe per \texttt{or}.
+
+	\begin{reg}{Operatori di confronto}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \tau$}
+			\AxiomC{$\Gamma \vdash y : \tau$}
+			\BinaryInfC{$\Gamma \vdash x \texttt{ == } y : \texttt{bool}$}
+		\end{prooftree}			
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \tau$}
+			\AxiomC{$\Gamma \vdash y : \sigma$}
+			\RightLabel{se $\exists \tau'\exists \sigma'.
+					(\tau=*\tau' \vee \tau=\&\tau') \wedge 
+					(\sigma=*\sigma' \vee \sigma=\&\sigma')$}
+			\BinaryInfC{$\Gamma \vdash x \texttt{ == } y : \texttt{bool}$}
+		\end{prooftree}			
+	\end{reg}
+
+	Regole analoghe per \texttt{>} e \texttt{<}.
+
+	\begin{reg}{Somma}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \tau$}
+			\AxiomC{$\Gamma \vdash y : \sigma$}
+			\RightLabel{se $\tau, \sigma 
+			\in \{ \texttt{int}, \texttt{double},
+				\texttt{string} \}$ }
+			\BinaryInfC{$\Gamma \vdash x \texttt{+} y : \max 
+				(\tau, \sigma)$}
+		\end{prooftree}
+		Dove $\texttt{int} \preceq \texttt{double} \preceq 
+			\texttt{string}$
+	\end{reg}
+
+	Regola analoga per \texttt{-}.
+	
+	\begin{reg}{Moltiplicazione}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \tau$}
+			\AxiomC{$\Gamma \vdash y : \sigma$}
+			\RightLabel{se $\tau, \sigma 
+			\in \{ \texttt{int}, \texttt{double}\}$ }
+			\BinaryInfC{$\Gamma \vdash x \texttt{*} y : 
+			\max (\tau, \sigma)$}
+		\end{prooftree}
+		Dove $\texttt{int} \preceq \texttt{double} $
+	\end{reg}
+
+	Regola analoga per \texttt{/}.
+
+	\begin{reg}{Negazione logica}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \texttt{bool} $}
+			\UnaryInfC{$\Gamma \vdash \texttt{!}x : \texttt{bool} $}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Dereferenziazione}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : *\tau $}
+			\UnaryInfC{$\Gamma \vdash *x : \tau $}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Referenziazione}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \tau $}
+			\RightLabel{se $\tau \in T_1$}
+			\UnaryInfC{$\Gamma \vdash \&x : \&\tau $}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Array}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash x : \array[\tau]$}
+			\AxiomC{$\Gamma \vdash y : \texttt{int}$}
+			\BinaryInfC{$\Gamma \vdash x[y] : \tau$}
+		\end{prooftree}
+	\end{reg}
+
+	Introduciamo ora regole per dedurre la validit\`a di uno statement
+	rispetto ai tipi. Se $s$ \`e uno statement, abbrevieremo tale
+	nozione dicendo ``$s$ valido''. Nelle seguenti, $\Delta$ indica
+	un environment, $\Gamma$ indica un contesto, $S$ indica una lista di
+	statement.
+
+	\begin{reg}{Espressioni}
+		\begin{prooftree}
+			\AxiomC{$\exists \tau \in T (\Delta \vdash x:\tau)$}
+			\UnaryInfC{$\Delta \vdash x \text{ valido }$}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Assegnazioni}
+		\begin{prooftree}
+			\AxiomC{$\Delta \vdash e : \tau$}
+			\AxiomC{$\Delta \vdash S \text{ validi}$}
+			\RightLabel{$x:\tau$ in $\Delta$}
+			\BinaryInfC{$\Delta \vdash (x \texttt{:=} e \texttt{;} S)
+				\text{ valido}$}
+		\end{prooftree}
+
+		\begin{prooftree}
+			\AxiomC{$\Delta \vdash e : *\tau$}
+			\AxiomC{$\Delta \vdash S \text{ validi}$}
+			\RightLabel{$x:\&\tau$ in $\Delta$}
+			\BinaryInfC{$\Delta \vdash (x \texttt{:=} e \texttt{;} S)
+				\text{ valido}$}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Dichiarazione di variabili}
+		\begin{prooftree}
+			\AxiomC{$\Delta.(\Gamma,x:\tau) \vdash S \text{ validi}$}
+			\RightLabel{$x$ non in $\Gamma$}
+			\UnaryInfC{$\Delta.\Gamma \vdash (x \texttt{:} \tau \texttt{;}
+				S) \text{ valido}$}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Blocchi}
+		\begin{prooftree}
+			\AxiomC{$\Delta.\varnothing \vdash S_1 \text{ validi}$}
+			\AxiomC{$\Delta \vdash S_2 \text{ validi}$}
+			\BinaryInfC{$\Delta \vdash 
+				(\texttt{do } S_1 \texttt{ end } S_2)$ 
+			\text{ valido}}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Iterazione e condizionali}
+		\begin{prooftree}
+			\AxiomC{$\Delta \vdash x : \texttt{bool}$}
+			\AxiomC{$\Delta \vdash S \text{ validi}$}
+			\BinaryInfC{$\Delta \vdash
+				(\texttt{if } x \texttt{ then } S \texttt{ end} )
+				\text{ valido} $}
+		\end{prooftree}
+	
+		\begin{prooftree}
+			\AxiomC{$\Delta \vdash x : \texttt{bool}$}
+			\AxiomC{$\Delta \vdash S_1 \text{ validi}$}
+			\AxiomC{$\Delta \vdash S_2 \text{ validi}$}
+			\TrinaryInfC{$\Delta \vdash
+				(\texttt{if } x \texttt{ then } S_1 \texttt{ else } 
+				S_2 \texttt{ end}) \text{ valido} $}
+		\end{prooftree}
+		
+		\begin{prooftree}
+			\AxiomC{$\Delta \vdash x : \texttt{bool}$}
+			\AxiomC{$\Delta \vdash S \text{ validi}$}
+			\BinaryInfC{$\Delta \vdash
+				(\texttt{until } x \texttt{ loop } S \texttt{ end} 
+				) \text{ valido} $}
+		\end{prooftree}
+
+		\begin{prooftree}
+			\AxiomC{$\Delta \vdash x : \texttt{bool}$}
+			\AxiomC{$\Delta \vdash s \text{ valido}$}
+			\AxiomC{$\Delta \vdash S \text{ validi}$}
+			\TrinaryInfC{$\Delta \vdash
+				(\texttt{from } s \texttt{ until } x \texttt{ loop } 
+				S \texttt{ end} ) \text{ valido} $}
+		\end{prooftree}
+
+	\end{reg}
+
+	\begin{reg}{Dichiarazione di funzioni}
+		\begin{prooftree}
+			\AxiomC{$\Delta.
+				(\Gamma, f : (\tau_1 \dots \tau_n) \rightarrow \tau_r)).
+				(\varnothing, x_1 : \tau_1 \dots
+				x_n : \tau_n, f : (\tau_1 \dots \tau_n) 
+				\rightarrow \tau_r) 
+				\vdash S \text{ v.}$}
+			\RightLabel{$\phi$}
+			\UnaryInfC{$\Delta.\Gamma \vdash
+				( f(x_1 : \tau_1 \dots x_n : \tau_n) : \tau_r 
+				\texttt{ do } S \texttt{ end} ) \text{ valido} $}
+		\end{prooftree}
+		Con $\phi =$ ``$f$ non in $\Gamma$, $\{x_i\}$ a coppie distinti''.
+	\end{reg}
+
+	\begin{reg}{Applicazione di funzioni}
+		\begin{prooftree}
+			\AxiomC{$\Gamma \vdash f : (\tau_1 \dots \tau_n) \rightarrow
+			\tau_r$}
+			\AxiomC{$\Gamma \vdash x_1 : \tau_1$}
+			\AxiomC{$\dots$}
+			\AxiomC{$\Gamma \vdash x_n : \tau_n$}
+			\QuaternaryInfC{$\Gamma \vdash f(x_1 \dots x_n) : \tau_r$}
+		\end{prooftree}
+	\end{reg}
+
+	\begin{reg}{Funzioni builtin}
+		\begin{prooftree}
+			\AxiomC{$\Delta \vdash x : \texttt{int}$}
+			\AxiomC{$\Delta S \text{ validi}$}
+			\BinaryInfC{$\Delta \vdash (\texttt{writeInt(} x \texttt{);} S)
+			\text{ valido}$}
+		\end{prooftree}
+	\end{reg}
+
+	Regole analoghe per \texttt{writeDouble} e \texttt{writeString}.
+
+\end{section}

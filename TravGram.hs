@@ -82,16 +82,10 @@ transStm x n = case x of
   SCondEl exp stms1 stms2 -> renderIfElse exp stms1 stms2 n
   SWInt exp ->
 	indent n ++ "writeInt(" ++ transExp exp ++ ");\n"
-  SRInt ->
-	indent n ++ "readInt();\n"
   SWDou exp ->
 	indent n ++ "writeDouble(" ++ transExp exp ++ ");\n"
-  SRDou ->
-	indent n ++ "readDouble();\n" 
   SWStr exp ->
 	indent n ++ "writeString(" ++ transExp exp ++ ");\n"
-  SRStr ->
-	indent n ++ "readString();\n"
 
 transAss :: Ass -> String 
 transAss x = case x of
@@ -123,6 +117,9 @@ transExp x = case x of
   EChar char -> show char
   ETrue -> "true"
   EFalse -> "false"
+  ERInt -> "readInt()"
+  ERDou -> "readDouble()"
+  ERStr -> "readString()"
 
 transType :: Type -> String
 transType x = case x of

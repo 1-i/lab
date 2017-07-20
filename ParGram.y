@@ -26,13 +26,13 @@ import ErrM
 %name pExp6 Exp6
 %name pExp7 Exp7
 %name pExp9 Exp9
+%name pExp10 Exp10
 %name pExp11 Exp11
 %name pExp12 Exp12
 %name pExp13 Exp13
 %name pExp Exp
 %name pExp1 Exp1
 %name pExp8 Exp8
-%name pExp10 Exp10
 %name pExp14 Exp14
 %name pType Type
 %name pPMet PMet
@@ -73,9 +73,9 @@ import ErrM
   'loop' { PT _ (TS _ 31) }
   'name' { PT _ (TS _ 32) }
   'or' { PT _ (TS _ 33) }
-  'readDouble()' { PT _ (TS _ 34) }
-  'readInt()' { PT _ (TS _ 35) }
-  'readString()' { PT _ (TS _ 36) }
+  'readDouble' { PT _ (TS _ 34) }
+  'readInt' { PT _ (TS _ 35) }
+  'readString' { PT _ (TS _ 36) }
   'ref' { PT _ (TS _ 37) }
   'return' { PT _ (TS _ 38) }
   'string' { PT _ (TS _ 39) }
@@ -141,11 +141,8 @@ Stm : ';' { AbsGram.SNop }
     | 'if' Exp 'then' ListStm 'end' { AbsGram.SCond $2 (reverse $4) }
     | 'if' Exp 'then' ListStm 'else' ListStm 'end' { AbsGram.SCondEl $2 (reverse $4) (reverse $6) }
     | 'writeInt' '(' Exp ')' ';' { AbsGram.SWInt $3 }
-    | 'readInt()' ';' { AbsGram.SRInt }
     | 'writeDouble' '(' Exp ')' ';' { AbsGram.SWDou $3 }
-    | 'readDouble()' ';' { AbsGram.SRDou }
     | 'writeString' '(' Exp ')' ';' { AbsGram.SWStr $3 }
-    | 'readString()' ';' { AbsGram.SRStr }
 Ass :: { Ass }
 Ass : Exp12 ':=' Exp ';' { AbsGram.DAss $1 $3 }
 Exp2 :: { Exp }
@@ -168,9 +165,14 @@ Exp7 : Exp7 '*' Exp8 { AbsGram.EMul $1 $3 }
      | Exp8 { $1 }
 Exp9 :: { Exp }
 Exp9 : '!' Exp8 { AbsGram.ENot $2 } | Exp10 { $1 }
+Exp10 :: { Exp }
+Exp10 : '*' Exp10 { AbsGram.EDeref $2 }
+      | '&' Exp10 { AbsGram.ERefer $2 }
+      | Exp11 { $1 }
 Exp11 :: { Exp }
-Exp11 : '*' Exp11 { AbsGram.EDeref $2 }
-      | '&' Exp11 { AbsGram.ERefer $2 }
+Exp11 : 'readInt' '(' ')' { AbsGram.ERInt }
+      | 'readDouble' '(' ')' { AbsGram.ERDou }
+      | 'readString' '(' ')' { AbsGram.ERStr }
       | Exp12 { $1 }
 Exp12 :: { Exp }
 Exp12 : Exp12 '[' Exp ']' { AbsGram.EArr $1 $3 } | Exp13 { $1 }
@@ -190,8 +192,6 @@ Exp1 :: { Exp }
 Exp1 : Exp2 { $1 }
 Exp8 :: { Exp }
 Exp8 : Exp9 { $1 }
-Exp10 :: { Exp }
-Exp10 : Exp11 { $1 }
 Exp14 :: { Exp }
 Exp14 : '(' Exp ')' { $2 }
 Type :: { Type }

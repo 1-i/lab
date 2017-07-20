@@ -1,0 +1,140 @@
+\begin{section}{Lessico}
+
+	L'alfabeto di \ME \ \`e costituito dai 95 caratteri stampabili. Un
+	identificatore \texttt{<id>} \`e una stringa costituita da qualsiasi
+	combinazione di lettere, cifre e istanze dei simboli \texttt{'} e
+	\texttt{\_} che inizi con una lettera, non sia virgolettata, e non
+	sia una parola riservata.
+
+	Una stringa letterale \texttt{<string>} \`e una stringa della forma
+	\texttt{"S"}, dove \texttt{S} \`e una qualsiasi sequenza di simboli 
+	tranne \texttt{"}, a meno che non sia preceduto da 
+	\texttt{\textbackslash}
+
+	Un intero letterale \texttt{<int>} \`e una stringa non vuota di cifre.
+
+	Un carattere letterale \texttt{<char>} \`e una stringa della forma
+	\texttt{'C'}, dove \texttt{C} \`e un qualsiasi simbolo.
+
+	Un reale letterale \texttt{<double>} \`e una stringa costituita da
+	due stringhe non vuote di cifre separate dal simbolo \texttt{.}
+	opzionalmente seguita dal simbolo \texttt{e} e da una stringa non
+	vuota di cifre, opzionalmente preceduta dal simbolo \texttt{-}
+
+	Un booleano letterale \texttt{<bool>} \`e una stringa 
+	che \`e esattamente una delle
+	seguenti due: \texttt{true}, \texttt{false}.
+
+	Le parole riservate di \ME \ sono le seguenti:
+
+	\begin{center} \begin{tabular} {llll}
+		and & array & bool & char \\
+		do & double & else & end \\
+		false & from & if & int \\
+		loop & name & or & ref \\
+		readDouble & readInt & readString & return \\
+		string & then & true & until \\ 
+		valres & value & writeDouble & writeInt \\
+		writeString \\
+	
+	\end{tabular} \end{center}
+
+\end{section}
+
+\begin{section}{Sintassi}
+	Una espressione di \ME \ \`e costituita da un qualsiasi numero di
+	letterali, identificatori o chiamate a funzioni, combinate
+	mediante vari operatori:
+
+	\begin{center} \begin{tabular} {lll}
+		\texttt{<exp>} & $\rightarrow$ & \texttt{<exp> or <exp>} \\
+		& $|$ & \texttt{<exp> and <exp>} \\
+		& $|$ & \texttt{<exp> == <exp>} \\
+		& $|$ & \texttt{<exp> > <exp>} \\
+		& $|$ & \texttt{<exp> < <exp>} \\
+		& $|$ & \texttt{<exp> + <exp>} \\
+		& $|$ & \texttt{<exp> - <exp>} \\
+		& $|$ & \texttt{<exp> * <exp>} \\
+		& $|$ & \texttt{<exp> / <exp>} \\
+		& $|$ & \texttt{! <exp>} \\
+		& $|$ & \texttt{* <exp>} \\
+		& $|$ & \texttt{\& <exp>} \\
+		& $|$ & \texttt{<assignable-exp>} \\
+		\texttt{<assignable-exp>} & $\rightarrow$ &
+			\texttt{<assignable-exp>[<exp>]} \\
+		& $|$ & \texttt{<id>([<exp>])} \\
+		& $|$ & \texttt{<id> | <string> | <int>} \\
+		& $|$ & \texttt{<double> | <char> | <bool>} \\
+		& $|$ & \texttt{(<exp>)} \\
+	\end{tabular} \end{center}
+
+	Gli operatori sono riportati nella lista precedente in ordine
+	crescente di precedenza. Osserviamo che le parentesi, producendo
+	un'espressione di precedenza massima, modificano l'ordine di
+	precedenza degli operatori.
+
+	\ME \ prevede annotazioni di tipo esplicite. Obbediscono alle
+	seguenti produzioni:
+
+	\begin{center} \begin{tabular} {lll}
+		\texttt{<type>} & $\rightarrow$ & 
+			\texttt{int | double | bool | string | char} \\
+		& $|$ & \texttt{* <type>} \\
+		& $|$ & \texttt{array [<type>]} \\
+	\end{tabular} \end{center}
+
+	\ME \ prevede inoltre la possibilit\`a di dichiarare la modalit\`a
+	di passaggio dei parametri alle funzioni.
+
+	\begin{center} \begin{tabular} {lll}
+		\texttt{<pdecl>} & $\rightarrow$ &
+			\texttt{<pmet> : <type>} \\
+		\texttt{<pmet>} & $\rightarrow$ &
+			\texttt{value <ident> | valres <ident>} \\
+		& $|$ & \texttt{ name <ident> | ref <ident> | <ident>} \\
+	\end{tabular} \end{center}
+
+	Sono previsti i seguenti statement:
+
+	\begin{center} \begin{tabular} {lll}
+		\texttt{<stm>} & $\rightarrow$ & 
+		\texttt{<id> : <type>} \\
+		 & $|$ & \texttt{<exp>} \\
+		 & $|$ & \texttt{<assignable-exp> := <exp>} \\
+		 & $|$ & \texttt{<f-decl} \\
+		 & $|$ & \texttt{if <exp> then [<stm>] else [<stm>] } \\
+		 & $|$ & \texttt{if <exp> then [<stm>] } \\
+		 & $|$ & \texttt{do [<stm>] end} \\
+		 & $|$ & \texttt{from <ass> until <exp> loop [<stm>] end} \\
+		 & $|$ & \texttt{until <exp> loop [<stm>] end} \\
+		 & $|$ & \texttt{writeInt(<expr>)} \\
+		 & $|$ & \texttt{writeDouble(<expr>)} \\
+		 & $|$ & \texttt{writeString(<expr>)} \\
+	\end{tabular} \end{center}
+
+	Lo statement di dichiarazione di una funzione ha la sintassi
+	seguente:
+
+	\begin{center} \begin{tabular} {lll}
+		\texttt{<f-decl>} & $\rightarrow$ &
+		\texttt{\$<ident> ( [<pdecl>] ) : <type> do [<stm>] end}
+	\end{tabular} \end{center}
+
+	Infine, definiamo un programma \ME \ come una successione 
+	finita di \textit{statement}:
+
+	\begin{center} \begin{tabular} {lll}
+	\texttt{<program>} & $\rightarrow$ & \texttt{[<statement>]}
+	\end{tabular} \end{center}
+
+	L'unica decisione che devia dalla specifica \`e l'introduzione del
+	glifo ``\$'' a precedere la dichiarazione di funzioni. La decisione
+	\`e motivata dal fatto che, a differenza dei linguaggi della famiglia
+	del \textit{C}, la sintassi di \textit{Eiffel} postpone l'annotazione
+	del tipo della funzione fino a dopo il termine della dichiarazione
+	dei parametri formali. In un parser \textbf{$LALR(1)$}, 
+	questo causa un conflitto reduce/reduce con la produzione che
+	identifica la chiamata di una funzione. \`E immediato verificare che
+	l'accorgimento adottato elimina l'ambiguit\`a.
+
+\end{section}

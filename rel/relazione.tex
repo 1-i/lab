@@ -1,0 +1,40 @@
+% progettino linguaggi 07/2017
+
+\documentclass[10pt,a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{bussproofs}
+\usepackage{amsthm}
+\setlength{\parindent}{0pt}
+
+\title{Progetto di Linguaggi e Compilatori}
+\author{Edoardo Annunziata, Desire Akpo}
+\date{26 luglio 2017}
+
+% Macro varie
+	\def \ME {\textit{ME}}%
+	\def \array {\texttt{array}}%
+
+% Configurazione di AMS Math
+	\renewcommand{\qedsymbol}{$\blacksquare$}%
+	\theoremstyle{definition}%
+	\newtheorem{reg}{Regola}%
+
+% Non mandare a capo le formule
+	\relpenalty=9999%
+	\binoppenalty=9999%
+
+% Testo
+\begin{document}
+
+	\maketitle
+
+	Per semplicit\`a, nella presente relazione chiameremo il linguaggio
+	implementato \textit{Mini Eiffel}, abbreviato in \ME.
+
+	\input{gram.tex}
+	\input{types.tex}
+	\input{impl.tex}
+
+\end{document}

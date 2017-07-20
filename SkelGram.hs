@@ -38,11 +38,8 @@ transStm x = case x of
   SCond exp stms -> failure x
   SCondEl exp stms1 stms2 -> failure x
   SWInt exp -> failure x
-  SRInt -> failure x
   SWDou exp -> failure x
-  SRDou -> failure x
   SWStr exp -> failure x
-  SRStr -> failure x
 transAss :: Ass -> Result
 transAss x = case x of
   DAss exp1 exp2 -> failure x
@@ -60,6 +57,9 @@ transExp x = case x of
   ENot exp -> failure x
   EDeref exp -> failure x
   ERefer exp -> failure x
+  ERInt -> failure x
+  ERDou -> failure x
+  ERStr -> failure x
   EArr exp1 exp2 -> failure x
   ECall ident exps -> failure x
   EVar ident -> failure x

@@ -67,9 +67,6 @@ data Exp
     | EFalse
   deriving (Eq, Ord, Show, Read)
 
-data Expr
-  deriving (Eq, Ord, Show, Read)
-
 data Type
     = TInt
     | TDouble

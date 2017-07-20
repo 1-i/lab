@@ -45,18 +45,18 @@ The reserved words used in gram are the following:
   | ``and`` | ``array`` | ``bool`` | ``char``
   | ``do`` | ``double`` | ``else`` | ``end``
   | ``false`` | ``from`` | ``if`` | ``int``
-  | ``loop`` | ``name`` | ``or`` | ``ref``
-  | ``return`` | ``string`` | ``then`` | ``true``
-  | ``until`` | ``valres`` | ``value`` | ``writeDouble``
-  | ``writeInt`` | ``writeString`` |  | 
+  | ``loop`` | ``name`` | ``or`` | ``readDouble``
+  | ``readInt`` | ``readString`` | ``ref`` | ``return``
+  | ``string`` | ``then`` | ``true`` | ``until``
+  | ``valres`` | ``value`` | ``writeDouble`` | ``writeInt``
+  | ``writeString`` |  |  | 
 
 The symbols used in gram are the following:
   | $ | ( | ) | :
-  | ; | , | := | readInt()
-  | readDouble() | readString() | == | <
-  | > | + | - | *
-  | / | ! | & | [
-  | ] |  |  | 
+  | ; | , | := | ==
+  | < | > | + | -
+  | * | / | ! | &
+  | [ | ] |  | 
 
 ===Comments===
 Single-line comments begin with --.There are no multiple-line comments in the grammar.
@@ -96,11 +96,8 @@ All other symbols are terminals.
   |  |  **|**  | ``if`` //Exp// ``then`` //[Stm]// ``end`` 
   |  |  **|**  | ``if`` //Exp// ``then`` //[Stm]// ``else`` //[Stm]// ``end`` 
   |  |  **|**  | ``writeInt`` ``(`` //Exp// ``)`` ``;`` 
-  |  |  **|**  | ``readInt()`` ``;`` 
   |  |  **|**  | ``writeDouble`` ``(`` //Exp// ``)`` ``;`` 
-  |  |  **|**  | ``readDouble()`` ``;`` 
   |  |  **|**  | ``writeString`` ``(`` //Exp// ``)`` ``;`` 
-  |  |  **|**  | ``readString()`` ``;`` 
   | //Ass// | -> | //Exp12// ``:=`` //Exp// ``;`` 
   | //Exp2// | -> | //Exp2// ``or`` //Exp3// 
   |  |  **|**  | //Exp3// 
@@ -119,8 +116,12 @@ All other symbols are terminals.
   |  |  **|**  | //Exp8// 
   | //Exp9// | -> | ``!`` //Exp8// 
   |  |  **|**  | //Exp10// 
-  | //Exp11// | -> | ``*`` //Exp11// 
-  |  |  **|**  | ``&`` //Exp11// 
+  | //Exp10// | -> | ``*`` //Exp10// 
+  |  |  **|**  | ``&`` //Exp10// 
+  |  |  **|**  | //Exp11// 
+  | //Exp11// | -> | ``readInt`` ``(`` ``)`` 
+  |  |  **|**  | ``readDouble`` ``(`` ``)`` 
+  |  |  **|**  | ``readString`` ``(`` ``)`` 
   |  |  **|**  | //Exp12// 
   | //Exp12// | -> | //Exp12// ``[`` //Exp// ``]`` 
   |  |  **|**  | //Exp13// 
@@ -136,7 +137,6 @@ All other symbols are terminals.
   | //Exp// | -> | //Exp1// 
   | //Exp1// | -> | //Exp2// 
   | //Exp8// | -> | //Exp9// 
-  | //Exp10// | -> | //Exp11// 
   | //Exp14// | -> | ``(`` //Exp// ``)`` 
   | //Type// | -> | ``int`` 
   |  |  **|**  | ``double`` 

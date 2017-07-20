@@ -69,8 +69,6 @@ transExp x = case x of
   EDouble double -> failure x
   ETrue -> failure x
   EFalse -> failure x
-transExpr :: Expr -> Result
-transExpr x = case x of
 transType :: Type -> Result
 transType x = case x of
   TInt -> failure x
